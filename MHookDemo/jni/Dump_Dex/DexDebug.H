@@ -1,0 +1,118 @@
+#ifndef __DexDebug_H_
+#define __DexDebug_H_
+struct DebugItem{
+	DebugItem* 	next;
+	u4	param_name;
+};
+//说明Size_Reg不表示DebugItem长度
+struct DebugList{
+	DebugList* 	next;
+	Base 	BS;
+	struct DebugItem* Item;
+	u4	number;
+	u4	Size_Reg;
+};
+class Dex_Debug:DexUtil{
+public:
+	DebugList* debug = NULL;
+/*
+************************************************************
+*				Dex_Debug
+*设置Dex_Debug*
+************************************************************
+*/
+	Dex_Debug(){
+		debug = (DebugList*)Alloc(sizeof(DebugList));
+	}
+/*
+************************************************************
+*				Dex_Debug
+*设置Dex_Debug*
+************************************************************
+*/
+	Dex_Debug(DexFile* inDex,Dex_Maps* inMap){
+		Parse("Dex_Debug");
+		mapsItem* inMapsItem = inMap->getTypeOffset(kDexTypeDebugInfoItem);
+		if(inMapsItem == NULL)return;
+		u4	mMemStart =(u4)inDex->pHeader + inMapsItem->offset;
+		u1* mMem =(u1*)mMemStart;
+		for(int m_i = 0;m_i < inMapsItem->size;m_i++){
+			DebugList* _List = (DebugList*)Alloc(sizeof(DebugList));
+			_List->BS.SetLoadOffset((u4)mMem-(u4)inDex->pHeader);
+			mMem = readLeb128(mMem,&_List->number);
+			mMem = readLeb128(mMem,&_List->Size_Reg);
+			Parse("Dex_Debug number:%08x",_List->number);
+			Parse("Dex_Debug Size_Reg:%08x",_List->Size_Reg);
+			u4 mData = 0;
+			do{
+				mMem = readLeb128(mMem,&mData);
+				if(mData != 0){
+					DebugItem* _Item = (DebugItem*)Alloc(sizeof(DebugItem));
+					_Item->param_name = mData;
+					Parse("Dex_Debug param_name:%08x",mData);
+					_List->Item = (DebugItem*)AddToLast(_List->Item,_Item);
+				}
+			}while(mData != 0);
+			debug =  (DebugList*)AddToLast(debug,_List);
+		}
+	}
+/*
+************************************************************
+*				DatatoFile
+*设置DatatoFile*
+************************************************************
+*/
+	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps){
+		if(NULL == debug){
+			Parse("没有存在debug数据,直接退出!");
+			return ;
+		}
+		//获取debug模块内存，没有就新建
+		Parse("Dex_Debug DatatoFile");
+		str_ModMem* modList =inMem->getByName("DebugInfo");
+		if(NULL == modList){
+			modList = inMem->newNameMem("DebugInfo",GetSize(debug));
+			Parse("debug %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
+		}
+		U1*	mMem = modList->Addr;
+		DebugList* _List =debug;
+		while(NULL != _List){
+			_List->BS.MemSize = AddAddr2(modList->Offset,SubAddr2(mMem,modList->Addr));
+			mMem = writeL128(mMem,_List->number);
+			mMem = writeL128(mMem,_List->Size_Reg);
+			DebugItem* _Item = _List->Item;
+			while(NULL != _Item){
+				mMem =  writeL128(mMem,_Item->param_name);
+				_Item = _Item->next;
+			}
+			_List = _List->next;
+		}
+	}
+/*
+************************************************************
+*				SetMemory
+*设置SetMemory*
+************************************************************
+*/
+	void SetMemory(str_ModMem* inMem,Dex_Maps* inMap){
+		inMap->getTypeOffset(kDexTypeDebugInfoItem)->offset = inMem->Offset;
+		Parse("Dex_Debug@SetMemory:%08x",inMem->Offset);
+		UInt mMemStart =(UInt)inMem->Addr;
+		U1*	mMem = inMem->Addr;
+		DebugList* _List =debug;
+		while(_List != NULL){
+			_List->BS.SetFileOffset((u4)mMem-mMemStart+inMem->Offset);
+			mMem =  writeL128(mMem,_List->number);
+			mMem =  writeL128(mMem,_List->Size_Reg);
+			DebugItem* _Item = _List->Item;
+			while(_Item != NULL){
+				mMem =  writeL128(mMem,_Item->param_name);
+				_Item = (DebugItem*)_Item->next;
+			}
+			mMem =  writeL128(mMem,0);
+			_List = (DebugList*)_List->next;
+		}
+	}
+};
+
+#endif

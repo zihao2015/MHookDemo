@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 安全检测中心检测项说明 -->
+<root>
+  <!-- 应用安全  -->
+  <items name="应用安全" id="01">
+    <!-- 业务安全 -->
+    <secitems name="业务安全" id="0101">
+      <item id="01010101" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="检测用户登录过程中是否需要输入用户名和密码" introduce="" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <!-- <item id="01010102" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="检测是否有记住用户名、密码的功能，数据存储机制是否有安全保障" introduce="建议" />-->
+      <!--重复项 -->
+      <item id="01010102" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="检测是否有密码尝试次数限制，限制策略是否安全" introduce="建议执行有效的密码尝试次数限制" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010103" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="检测是否存在密码或账户登录错误提示混淆的问题" introduce="建议统一提示”密码或账号错误“" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。" />
+      <item id="01010104" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否有找回密码功能" introduce="建议设置密码找回功能" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010105" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否记住用户名或密码" introduce="建议不要在本地存储中记录密码或者用户名" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010106" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否有错误信息提示" introduce="建议密码用户名错误的时候应该给于安全性的提示" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010107" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否提示用户名错误" introduce="建议提示信息不能单独是用户名或者密码" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010108" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否提示用户名或者密码错误" introduce="建议提示信息不能单独是用户名或者密码" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010109" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否提示密码错误" introduce="建议提示信息不能单独是用户名或者密码" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <!-- <item id="01010104" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否有登录次数限制" introduce="建议" /> -->
+      <!--重复项 -->
+      <item id="01010110" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否有安全键盘" introduce="建议在密码输入处设置安全键盘" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010111" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否可以弱密码注册" introduce="建议设置不允许弱密码注册" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010112" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否有验证码确认用户信息" introduce="建议使用验证码确认用户信息" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。" />
+      <item id="01010113" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否有支付功能" introduce="" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010114" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="支付密码和登录密码是否相同" introduce="建议支付密码和登录密码不要设置为相同" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010115" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="支付密码和账户是否使用同一键盘进行输入" introduce="建议不要对用户名和密码都使用安全键盘" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010116" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="支付过程是否可以截图" introduce="建议限制支付过程中的截图操作" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010117" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否使用了Https协议" introduce="建议使用Https协议对数据进行传输" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010118" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="是否含有敏感信息的输入" introduce="" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010119" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="对于敏感信息是否完整的显示出来" introduce="建议对敏感数据不要完整的显示出来" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010120" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="程序进入后台是否会有提示" introduce="建议当程序进入后台的时候进行提示" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010121" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="在应用数据目录下发现了密码都是 " introduce="强烈建议不要将密码明文存放到本地" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010122" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="在应用数据目录下发现了用户名 " introduce="建议本地不要存放用户帐号信息" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010123" score="3:2" level="危险" action="Maunal" name="4.2.1.1 用户登录" bref="存在明文的敏感数据" introduce="建议本地不要存放用户的隐私数据" bugdesc="登录功能涉及帐号安全，不合理规范的设计会产生严重的漏洞，造成用户账号可以被破解、越权访问，以及密码丢失、泄露。"/>
+      <item id="01010201" score="4:3" level="危险" action="Maunal" name="4.2.1.2 密码管理" bref="检测密码输入是否使用安全键盘" introduce="建议密码输入采用安全键盘" bugdesc="用户注册，用户登录，忘记密码、密码找回中任何一个功能存在设计缺陷或者逻辑漏洞都可能导致用户登录凭证被窃取、密码被破解、越权访问或者任意密码重置" />
+      <item id="01010202" score="4:3" level="危险" action="Maunal" name="4.2.1.2 密码管理" bref="检测密码是否有强度要求" introduce="建议不允许弱密码注册" bugdesc="用户注册，用户登录，忘记密码、密码找回中任何一个功能存在设计缺陷或者逻辑漏洞都可能导致用户登录凭证被窃取、密码被破解、越权访问或者任意密码重置" />
+      <item id="01010203" score="4:3" level="危险" action="Maunal" name="4.2.1.2 密码管理" bref="检测密码是否本地存储" introduce="建议不要在本地存储密码" bugdesc="用户注册，用户登录，忘记密码、密码找回中任何一个功能存在设计缺陷或者逻辑漏洞都可能导致用户登录凭证被窃取、密码被破解、越权访问或者任意密码重置" />
+      <item id="01010204" score="4:3" level="危险" action="Maunal" name="4.2.1.2 密码管理" bref="检测密码是否加密传输" introduce="建议密码的传输要进行加密" bugdesc="用户注册，用户登录，忘记密码、密码找回中任何一个功能存在设计缺陷或者逻辑漏洞都可能导致用户登录凭证被窃取、密码被破解、越权访问或者任意密码重置" />
+      <item id="01010205" score="4:3" level="危险" action="Maunal" name="4.2.1.2 密码管理" bref="检测登录密码、支付密码等不同类型密码是否采取不同的安全级别管理" introduce="" bugdesc="用户注册，用户登录，忘记密码、密码找回中任何一个功能存在设计缺陷或者逻辑漏洞都可能导致用户登录凭证被窃取、密码被破解、越权访问或者任意密码重置" />
+      <item id="01010206" score="4:3" level="危险" action="Maunal" name="4.2.1.2 密码管理" bref="检测密码找回策略是否存在安全隐患" introduce="建议对用户进行密码找回策略时验证必要的信息" bugdesc="用户注册，用户登录，忘记密码、密码找回中任何一个功能存在设计缺陷或者逻辑漏洞都可能导致用户登录凭证被窃取、密码被破解、越权访问或者任意密码重置" />
+      <item id="01010301" score="3:3" level="危险" action="Maunal" name="4.2.1.3 支付安全" bref="检测是否有支付密码保护" introduce="建议支付的时候一定需要类似于密码等信息的验证" bugdesc="如果支付密码没有受到保护,就有可能被窃取;\n如果对输入密码错误的次数没有限制，黑客就可以通过持续的输入密码进行尝试暴力破解出密码"/>
+      <item id="01010302" score="3:3" level="危险" action="Maunal" name="4.2.1.3 支付安全" bref="检测是否有支付密码试错次数限制" introduce="建议需要有有效的支付密码试错次数限制" bugdesc="如果支付密码没有受到保护,就有可能被窃取;\n如果对输入密码错误的次数没有限制，黑客就可以通过持续的输入密码进行尝试暴力破解出密码"/>
+      <item id="01010401" score="2:1" level="危险" action="Maunal" name="4.2.1.4 身份认证" bref="检测在安全级别要求较高的应用场景是否有除密码之外的安全认证机制，安全认证机制是否起到较完善的安全保护效果。" introduce="建议采用多重认证机制" bugdesc="单一的身份验证机制很容易导致登录凭证被窃取、盗用"/>
+      <item id="01010501" score="1:1" level="危险" action="Maunal" name="4.2.1.5 超时设置" bref="检测是否有会话超时机制，超时后重鉴别" introduce="建议对于会话超时后一定要进行数据清空" bugdesc="登录超过一定时间后如果用户未进行操作则需重新登录，以保障账号安全"/>
+      <item id="01010601" score="1:1:4:7" level="危险" action="Auto" name="4.2.1.6 异常处理" bref="检测在软件操作异常时是否有异常处理机制，错误提示是否泄漏敏感信息" introduce="建议在application中设置全局异常捕获，在异常发生时立即记录异常，进行加密处理后通过直接发送邮件或者其它方式将异常情况报告给开发人员，以在最短的时间内发现并处理异常。" bugdesc="在开发时偶尔会由于疏忽导致有些异常没有进行处理。如果不提示详细信息又会给用户报告异常带来麻烦，不利于开发人员及时发现并处理异常。但是如果将异常详细信息不经处理直接提示给用户则会带来安全隐患。"/>
+    </secitems>
+    <!-- 组件安全 -->
+    <secitems name="组件安全" id="0102">
+      <item id="01020101" score="1:1:7:8" level="危险" action="Auto" name="4.2.2.1 Activity安全" bref="检测Activity是否会被权限攻击" introduce="建议如果组件不需要与其它app共享数据或交互，请在AndroidManifest.xml配置文件中将该组件设置为exported = “False”。如果组件需要与其它app共享数据或交互，请对组件进行权限控制和参数校验" bugdesc="导出的组件可以被第三方app任意调用，导致敏感信息泄露或者恶意攻击者精心构造攻击载荷达到攻击的目的。"/>
+      <item id="01020102" score="1:1:7:8" level="危险" action="Auto" name="4.2.2.1 Activity安全" bref="检测Activity是否会被劫持" introduce="建议如果组件不需要与其它app共享数据或交互，请在AndroidManifest.xml 配置文件中将该组件设置为exported = “False”。如果组件需要与其它app共享数据或交互，请对组件进行权限控制和参数校验" bugdesc="导出的组件可以被第三方app任意调用，导致敏感信息泄露或者恶意攻击者精心构造攻击载荷达到攻击的目的。" />
+      <item id="01020201" score="1:1:7:8" level="危险" action="Auto" name="4.2.2.2 Broadcast Receiver安全" bref="检测Broadcast Receiver是否会被监听、劫持" introduce="建议如果组件不需要与其它app共享数据或交互，请在AndroidManifest.xml 配置文件中将该组件设置为exported = “False”。如果组件需要与其它app共享数据或交互，请对组件进行权限控制和参数校验" bugdesc="可造成信息泄露，拒绝服务攻击等"/>
+      <item id="01020301" score="1:1:5:8" level="危险" action="Auto" name="4.2.2.3 Service安全" bref="检测Service是否会被权限攻击" introduce="建议如果组件不需要与其它app共享数据或交互，请在AndroidManifest.xml 配置文件中将该组件设置为exported = “False”。如果组件需要与其它app共享数据或交互，请对组件进行权限控制和参数校验" bugdesc="Service存在的安全漏洞包括：权限提升，拒绝服务攻击。没有声明任何权限的应用即可在没有任何提示的情况下启动该服务，完成该服务所作操作，对系统安全性产生极大影响。"/>
+      <item id="01020401" score="1:1:7:8" level="危险" action="Auto" name="4.2.2.4 ContentProvider安全" bref="检测Content Provider是否会被权限攻击" introduce="建议如果组件不需要与其它app共享数据或交互，请在AndroidManifest.xml 配置文件中将该组件设置为exported = “False”。如果组件需要与其它app共享数据或交互，请对组件进行权限控制和参数校验" bugdesc="Content Provider的不安全使用会产生sql注入、文件遍历等漏洞，导致用户数据泄露"/>
+      <item id="01020501" score="1:1:7:8" level="危险" action="Auto" name="4.2.2.5 Intent安全" bref="intent scheme URLs(意图协议URL)，可以通过解析特定格式的URL直接向系统发送意图，导致自身的未导出的组件可被调用,隐私信息泄露" introduce="建议配置category filter, 添加android.intent.category.BROWSABLE方式规避风险" bugdesc="intent scheme URLs(意图协议URL)，可以通过解析特定格式的URL直接向系统发送意图，导致自身的未导出的组件可被调用,隐私信息泄露。Intent隐式调用发送的意图可能被第三方劫持，如果含有隐私信息可能导致内部隐私数据泄露"/>
+      <item id="01020502" score="1:1:7:8" level="危险" action="Auto" name="4.2.2.5 Intent安全" bref="Intent隐式调用发送的意图可能被第三方劫持，如果含有隐私信息可能导致内部隐私数据泄露" introduce="建议将隐式调用改为显式调用" bugdesc="intent scheme URLs(意图协议URL)，可以通过解析特定格式的URL直接向系统发送意图，导致自身的未导出的组件可被调用,隐私信息泄露。Intent隐式调用发送的意图可能被第三方劫持，如果含有隐私信息可能导致内部隐私数据泄露"/>
+    </secitems>
+    <!-- WebView安全 -->
+    <secitems name="WebView安全" id="0103">
+      <item id="01030101" score="1:1:5:7" level="危险" action="Auto" name="4.2.3.1 WebView安全" bref="检测是否利用webView组件中的addJavascriptInterface接口函数，是否移除android webview组件所包含的3个隐藏的系统接口：“accessibility”、“accessibilityTraversal”以及“searchBoxJavaBridge_”。" introduce="（1）建议开发者不要使用addJavascriptInterface，使用注入javascript和第三方协议的替代方案，具体实现代码可参考：https://github.com/pedant/safe-java-js-webview-bridge。（2）使用removeJavascriptInterface方法移除掉“accessibility”、“accessibilityTraversal”以及“searchBoxJavaBridge_”这3个隐藏的webview组件接口" bugdesc="利用android的webView组件中的addJavascriptInterface接口函数，可以实现本地java与js之间交互，但是在安卓4.2以下的系统中，这种方案却给我们的应用带来了很大的安全风险。攻击者如果在页面执行一些非法的JS（诱导用户打开一些钓鱼网站以进 入风险页面），通过远程代码执行，反弹拿到用户手机的shell权限。接下来攻击者就可以在后台默默安装木马，完全控制用户的手机。另外，android webview 组件包含3个隐藏的系统接口：“accessibility”、“accessibilityTraversal”以及“searchBoxJavaBridge_”，同样会造成远程代码执行"/>
+    </secitems>
+    <!-- 发布规范 -->
+    <secitems name="发布规范" id="0104">
+      <item id="01040101" score="1:1:2:1" level="一般" action="Auto" name="4.2.4.1 测试数据移除安全" bref="检测发布应用的主配文件AndroidManifest.xml文件中是否包含不应该包含的测试代码" introduce="建议应用发布时在AndroidManifest.xml配置文件中设置application属性为debuggable=“false”，allowBackup=“false”，同时在代码中加入判断application属性debuggable=“false”是否被修改的代码。" bugdesc="如果在AndroidManifest.xml配置文件中设置了application属性为debuggable=“true”，则应用可以被任意调试，这就为攻击者调试和破解程序提供了极大方便。如果设置application属性为allowBackup=“true”，则应用在系统没有root的情况下其私有数据也可以通过备份方式进行任意读取和修改，造成隐私泄露和信息被恶意篡改。"/>
+      <item id="01040201" score="1:1:2:1" level="一般" action="Auto" name="4.2.4.2 日志信息移除安全" bref="检测发布应用中是否包含不应该包含的日志信息" introduce="开发者在开发应用过程中应该注意防范信息泄露。在应用发布时要注意删除logcat输出或者打印的诸如用户名，密码，token，cookie和imei等隐私、敏感信息" bugdesc="通过logcat打印的调试信息或者错误异常信息，可以定位应用运行的流程或者关键代码，从而降低黑客破解的难度"/>
+    </secitems>
+    <!-- 应用管理 -->
+    <secitems name="应用管理" id="0105">
+      <item id="01050101" score="1:1" level="一般" action="Maunal" name="4.2.5.1 下载安装" bref="检测是否有安全的应用发布渠道供用户下载 " introduce="建议发布时对现有市场进行检测,是否有名称伪造或者类似的恶意应用出现" bugdesc="检测应用下载渠道，从源头杜绝恶意盗版应用对用户造成损失"/>
+      <item id="01050102" score="1:1" level="一般" action="Maunal" name="4.2.5.1 下载安装" bref="检测各应用市场是否存在二次打包的恶意应用" introduce="" bugdesc="检测应用下载渠道，从源头杜绝恶意盗版应用对用户造成损失"/>
+      <item id="01050201" score="1:1" level="一般" action="Maunal" name="4.2.5.2 应用卸载" bref="检测应用卸载是否清除完全，不残留数据" introduce="建议卸载时将用户SD卡中的数据一并清理掉,不要保留上次安装的任何数据" bugdesc="应用在卸载后需要保障在系统中没有保存该应用的残余数据，否则残余数据会被其它用户或者应用任意读取，造成敏感信息泄露"/>
+      <item id="01050301" score="2:3" level="一般" action="Maunal" name="4.2.5.3 版本升级" bref="检测是否具备在线版本检测、升级功能" introduce="建议对升级的服务器地址进行校验，防止恶意服务器注入让用户更新到恶意应用" bugdesc="应用升级过程中升级服务器地址没有加密，可能会被替换为恶意地址，升级apk也存在被恶意替换的威胁。"/>
+      <item id="01050302" score="2:3" level="一般" action="Maunal" name="4.2.5.3 版本升级" bref="检测升级过程是否会被第三方劫持、欺骗 " introduce="" bugdesc="应用升级过程中升级服务器地址没有加密，可能会被替换为恶意地址，升级apk也存在被恶意替换的威胁。"/>
+    </secitems>
+    <!-- <secitems name="应用合规" id="0106"> -->
+    <!-- 应用合规 -->
+    <!-- <item id="01060101" score="AAAA" level="危险" action="Maunal" name="4.2.6.1 安全合规" bref="检测应用是否符合国家相关安全标准" introduce="建议" /> -->
+    <!-- </secitems>  -->
+    <!-- 安全增强 -->
+    <secitems name="安全增强" id="0107">
+      <item id="01070101" score="1:1:5:7" level="一般" action="Auto" name="4.2.7.1 权限管理" bref="检测是否存在权限滥用问题（目前只检测Java层）" introduce="建议去掉多余权限" bugdesc="冗余权限可导致串谋攻击，串权限攻击的核心思想是程序A有某个特定的执行权限，程序B没有这个权限。但是B可以利用A的权限来执行需要A权限才能完成的功能。"/>
+      <item id="01070201" score="1:1" level="一般" action="Maunal" name="4.2.7.2 输入检查" bref="是否对输入内容进行过滤" introduce="建议对输入内容进行过滤" bugdesc="通过客户端注入攻击（sql注入）获取用户数据"/>
+      <item id="01070301" score="1:2" level="危险" action="Maunal" name="4.2.7.3 键盘记录" bref="是否存在键盘记录隐患" introduce="建议自定义键盘并对每次输入的数据进行加密处理，防止密码在内存中存在" bugdesc="木马病毒类程序可以对用户的键盘输入进行记录，从而窃取用户账户、密码等重要信息 "/>
+      <item id="01070401" score="1:2" level="一般" action="Maunal" name="4.2.7.4 界面劫持" bref="用户在进行敏感信息输入时是否存在界面劫持和截屏问题" introduce="建议检测顶层界面是否为当前应用的界面" bugdesc="如果输入界面被劫持，黑客在原密码输入界面上覆盖一层透明界面用户截获用户输入的内容，同时还可以实现对输入时屏幕点击事件的监听，实时截屏对密码进行获取"/>
+      <item id="01070501" score="1:1:2:1" level="一般" action="Auto" name="4.2.7.5 模拟器检测" bref="检测应用是否可以运行在模拟器环境中" introduce="建议在应用中添加代码检测应用是否运行在模拟器中" bugdesc="模拟器具有经济成本低、高度可定制、易于开发、容易部署等优点，攻击者可以通过自己修改定制特定的模拟器来达到监控应用关键函数、获取应用敏感数据，破解应用的目的。为了增加破解阻力，应用中应该进行模拟器检测，添加反模拟器运行代码"/>
+      <item id="01070601" score="1:1" level="危险" action="Maunal" name="4.2.7.6 进程保护" bref="检测应用是否具备抵抗进程注入的能力" introduce="建议对进程进行保护防止ptrace挂载" bugdesc="应用进程可以被其它应用程序进行注入，使其运行数据被窃取、修改，执行流程被改变，从而达到破解的目的，给应用开发者造成损失"/>
+      <item id="01070701" score="2:1:1:1" level="危险" action="Auto" name="4.2.7.7 动态调试" bref="检测程序是否具备抵抗动态调试的能力（Java层和Native层）" introduce="建议加入反调试代码" bugdesc="动态调试可以获取函数运行时各个变量的取值，程序运行逻辑，加密的数据信息，从而为破解应用提供便利"/>
+      <item id="01070801" score="1:1" level="危险" action="Maunal" name="4.2.7.8 第三方SDK安全" bref="检测App中使用的第三方SDK是否存在安全隐患" introduce="建议使用前，确定其SDK没有公开BUG是安全的" bugdesc="应用使用的第三方SDK如果存在漏洞，同样会给应用带来风险"/>
+    </secitems>
+  </items>
+  <!-- 源码安全 -->
+  <items name="源码安全" id="02">
+    <!-- 程序完整性 -->
+    <secitems name="程序完整性" id="0201">
+      <item id="02010101" score="3:5" level="危险" action="Maunal" name="4.3.1.1 程序签名" bref="检测程序是否进行签名校验，签名校验是否会被绕过" introduce="建议对应用进行签名校验，签名信息存储于服务器端" bugdesc="应用如果没有作签名校验或者完整性校验，可被黑客很轻易的进行二次打包。二次打包是盗版正规Android APP，破解后植入广告、恶意代码、病毒后重新打包。虽然从性能、用户体验、外观都与正规APP一模一样，但背后却在悄悄地窃取密码、界面劫持、偷窥隐私、广告骚扰等。"/>
+      <item id="02010201" score="1:2" level="危险" action="Maunal" name="4.3.1.2 完整性校验" bref="检测程序是否进行完整性校验，完整性校验是否会被绕过" introduce="建议对应用进行完整性校验" bugdesc="应用如果没有作签名校验或者完整性校验，可被黑客很轻易的进行二次打包。二次打包是盗版正规Android APP，破解后植入广告、恶意代码、病毒后重新打包。虽然从性能、用户体验、外观都与正规APP一模一样，但背后却在悄悄地窃取密码、界面劫持、偷窥隐私、广告骚扰等。"/>
+    </secitems>
+    <!-- 程序机密性	 -->
+    <secitems name="程序机密性" id="0202">
+      <item id="02020101" score="1:3:6:7" level="危险" action="Auto" name="4.3.2.1 代码混淆" bref="检测程序是否进行代码混淆" introduce="建议对应用代码进行混淆" bugdesc="对代码进行混淆，能够提高黑客阅读和理解代码的门槛，在一定程度上增加了黑客破解的难度"/>
+      <item id="02020201" score="2:6:6:7" level="危险" action="Auto" name="4.3.2.2 Dex保护" bref="检测程序可执行文件Dex是否做加密处理" introduce="建议对dex文件进行加密保护，防止被dex2jar等工具反编译" bugdesc="Dex为Android应用的核心，保护不当容易被反编译，暴露程序重要信息，面临被植入广告、恶意代码、病毒等风险。"/>
+      <item id="02020301" score="3:5:2:5" level="危险" action="Auto" name="4.3.2.3 SO保护" bref="检测程序的本地库文件是否做加密处理" introduce="建议对so文件进行加密保护，防止其被逆向" bugdesc="Android so通过C/C++代码来实现，相对于Java代码来说其反编译难度要大很多，但对于经验丰富的破解者来说，仍然是很容易的事。应用的关键性功能或算法，都会在so中实现，如果so被逆向，应用的关键性代码和算法都将会暴露。"/>
+      <item id="02020401" score="1:2:1:5" level="危险" action="Auto" name="4.3.2.4 资源文件保护" bref="检测程序的资源文件是否做加密处理" introduce="建议对资源文件做加密处理，防止资源被替换、盗用，以及从资源文件定位到应用关键代码处。" bugdesc="反编译apk获得源码，通过资源文件或者关键字符串的ID定位到关键代码位置，为逆向破解应用程序提供方便"/>
+      <item id="02020402" score="1:2:1:5" level="危险" action="Auto" name="4.3.2.4 资源文件保护" bref="检测程序的资源文件、字符串是否做加密处理" introduce="建议对资源文件、字符串做加密处理，防止通过资源文件或者字符串定位到应用关键代码处。" bugdesc="反编译apk获得源码，通过资源文件或者关键字符串的ID定位到关键代码位置，为逆向破解应用程序提供方便"/>
+      <item id="02020501" score="1:5" level="危险" action="Maunal" name="4.3.2.5 内存保护" bref="检测程序运行时内存空间是否有安全保护" introduce="建议对内存中的关键数据进行加密不要以明文的形式存在" bugdesc="应用中的关键数据存放在内存中，在root权限的设备上可以通过ptrace来获取进程的地址空间，可以对内存中的数据进行窃取和修改"/>
+      <item id="02020601" score="1:5" level="危险" action="Maunal" name="4.3.2.6 重要函数逻辑安全" bref="检测程序运行时重要函数是否有安全保护" introduce="建议确认重要函数逻辑中的加密算法的安全性" bugdesc="应用中对一些敏感信息使用的加密函数如果使用了自己设计的加密算法，且其逻辑过于简单，则很容易会被破解"/>
+      <item id="02020701" score="1:5" level="一般" action="Maunal" name="4.3.2.7 硬编码" bref="检测程序是否存在硬编码问题 " introduce="建议不要将密钥或者" bugdesc="将诸如加密密钥之类的存放在应用程序代码中，导致加密算法的破解，给应用开发者和用户造成损失。服务器IP地址硬编码在代码中，造成服务器IP地址暴露，给服务器安全造成威胁"/>
+      <!-- <item id="02020801" score="1:5" level="危险" action="Auto" name="4.3.2.8 WebView源码安全" bref="如果程序使用混合式（Hybrid）编程，检测JS功能函数是否进行代码混淆和加密" introduce="建议" />-->
+    </secitems>
+  </items>
+  <!-- 数据安全 -->
+  <items name="数据安全" id="03">
+    <!-- 数据输入 -->
+    <secitems name="数据输入" id="0301" >
+      <item id="03010101" score="3:1" level="一般" action="Maunal" name="4.4.1.1 敏感数据显示" bref="检测敏感数据（如用户密码）输入时软件界面是否为非明文显示" introduce="建议敏感数据（如用户密码）输入时数据应为非明文显示" bugdesc="如果敏感信息以明文显示则很容易被以截屏，视频录像等方式窃取"/>
+      <item id="03010201" score="4:1" level="危险" action="Maunal" name="4.4.1.2 输入监听" bref="检测用户在进行输入操作时，输入的数据是否会被其他终端或其他程序非授权获取" introduce="建议对用户的点击操作进行监听，防止第三方程序的获取修改" bugdesc="通过按键记录、截屏等方式对用户输入进行监听，获取用户输入内容"/>
+    </secitems>
+    <!-- 数据存储 -->
+    <secitems name="数据存储" id="0302" >
+      <item id="03020101" score="2:1" level="危险" action="Maunal" name="4.4.2.1 存储数据类别" bref="检测是否本地保存手机号、密码等敏感信息，程序应尽可能少的存储用户的敏感数据" introduce="建议尽量不要在本地保存手机号、密码等敏感信息，程序应尽可能少的存储用户的敏感数据" bugdesc="如果在本地存储了手机号、密码等敏感信息，如果手机已root，则很容易被第三方程序窃取和篡改。"/>
+      <item id="03020201" score="1:1:8:6" level="危险" action="Auto" name="4.4.2.2 数据访问控制" bref="检测数据是否仅被授权用户或应用进程访问。如果开发者使用openFileOutput(String name,int mode)方法创建内部文件时，将第二个参数设置为Context.MODE_WORLD_READABLE或 Context.MODE_WORLD_WRITEABLE，就会让这个文件变为全局可读或全局可写的。" introduce="建议 禁止全局文件可读写。 如果开发者要跨应用共享数据，一种较好的方法是实现一个Content Provider组件，提供数据的读写接口，并为读写操作分别设置一个自定义权限。" bugdesc="检测数据是否仅被授权用户或应用进程访问。如果开发者使用openFileOutput(String name,int mode)方法创建内部文件或者使用getSharedPreferences读取配置信息时，如果使用MODE_WORLD_READABLE或 MODE_WORLD_WRITEABLE模式，就会让这个文件变为全局可读或全局可写的。"/>
+      <item id="03020202" score="1:1:2:1" level="危险" action="Auto" name="4.4.2.2 数据访问控制" bref="检测数据是否仅被授权用户或应用进程访问。使用getSharedPreferences读取配置信息时一般使用MODE_PRIVATE参数，如果使用WORLD_READABLE和MODE_WORLD_WRITABLE将会导致配置文件被第三方app读写。" introduce="建议始终使用MODE_PRIVATE作为getSharedPreferences方法的参数" bugdesc="检测数据是否仅被授权用户或应用进程访问。如果开发者使用openFileOutput(String name,int mode)方法创建内部文件或者使用getSharedPreferences读取配置信息时，如果使用MODE_WORLD_READABLE或 MODE_WORLD_WRITEABLE模式，就会让这个文件变为全局可读或全局可写的。"/>
+      <item id="03020301" score="4:2:9:6" level="一般" action="Auto" name="4.4.2.3 敏感数据加密" bref="检测对敏感数据加密，在使用SecureRandom时如果使用setSeed方法设置种子将会造成生成的随机数不随机" introduce="建议通过/dev/urandom或者/dev/random获取的熵值来初始化伪随机数生成器" bugdesc="本地加密时如果使用SecureRandom中的setSeed方法设置种子将会造成生成的随机数不随机，使加密数据容易被破解。在SecureRandom生成随机数时，如果我们不调用setSeed方法，SecureRandom会从系统的中找到一个默认随机源。每次生成随机数时都会从这个随机源中取seed。在linux和Android中这个随机源位于/dev/urandom文件。 如果我们在终端可以运行cat /dev/urandom命令，会观察到随机值会不断的打印到屏幕上。在Android 4.2以下，SecureRandom是基于老版的Bouncy Castle实现的。如果生成SecureRandom对象后马上调用setSeed方法。SecureRandom会用用户设置的seed代替默认的随机源。使得每次生成随机数时都是会使用相同的seed作为输入。从而导致生成的随机数是相同的。"/>
+      <item id="03020401" score="4:1" level="一般" action="Maunal" name="4.4.2.4 内存数据安全" bref="检测程序在运行过程中，内存中是否保存敏感数据，敏感数据是否进行加密处理，加密强度是否达到要求" introduce="建议对重要变量数据进行加密存放，内存中不要存在该变量的拷贝份" bugdesc="在获取到应用程序的进程空间后，对内存指定数据进行修改"/>
+    </secitems>
+    <!-- 数据传输 -->
+    <secitems name="数据传输" id="0303" >
+      <item id="03030101" score="4:1:9:5" level="危险" action="Maunal" name="4.4.3.1 远程数据通讯协议" bref="检测程序与服务器通信过程中，敏感数据是否选择SSL/TLS或IPSec等安全通信协议。 " introduce="建议对于敏感数据应该选择SSL/TLS或IPSec等安全通信协议" bugdesc="如果数据传输协议不安全，很容易使客户端与服务器端的通讯被劫持，或者导致中间人攻击。"/>
+      <item id="03030201" score="3:1:9:5" level="危险" action="Auto" name="4.4.3.2 证书验证" bref="检测程序与服务器的通信验证是否有证书，是否有证书合法性和一致性校验 " introduce="建议严格对服务端和客户端证书进行校验，禁止信任所有证书，对于异常事件的处理不应该直接return null " bugdesc="开发者在代码中不检查服务器证书的有效性，或选择接受所有的证书。这种做法可能导致的问题是中间人攻击。"/>
+      <item id="03030301" score="4:1:4:1" level="一般" action="Auto" name="4.4.3.3 远程数据通信加密" bref="检测程序与服务器通信的敏感数据是否使用分组加密算法，如果使用了分组加密算法，则检测是否使用了ECB模式。" introduce="建议使用CBC模式进行初始化，CBC模式明文被加密前要与前面的密文进行异或运算后再加密，因此只要选择不同的初始向量，相同的密文加密后会形成不同的密文" bugdesc="如果数据通信没有经过加密，直接使用HTTP协议登录账户或交换数据。例如，攻击者在自己设置的钓鱼网络中配置DNS服务器，将软件要连接的服务器域名解析至攻击者的另一台服务器在，这台服务器就可以获得用户登录信息，或者充当客户端与原服务器的中间人，转发双方数据。另外，程序与服务器通信的敏感数据如果使用了分组加密算法，采用ECB模式将会使相同的明文会产生相同的密文，容易受到字典攻击，安全性不够高"/>
+      <item id="03030401" score="4:1" level="一般" action="Maunal" name="4.4.3.4 数据传输完整性" bref="检测程序与服务器通信的敏感数据是否进行完整性校验，防止数据传输中断或被篡改" introduce="建议对通讯协议加入哈希校验，防止协议被重放，服务器对每条协议要保证是唯一不可复制的" bugdesc="没有进行完整性校验的数据传输可导致数据包被监听、篡改"/>
+      <item id="03030501" score="2:1" level="一般" action="Maunal" name="4.4.3.5 本地数据通讯安全" bref="检测程序与本地其他应用进程间的数据传输是否采取加密处理和权限控制" introduce="建议正确的配置进程间通讯的调用权限" bugdesc="进程间数据通信监听、解析"/>
+      <item id="03030601" score="4:1" level="危险" action="Maunal" name="4.4.3.6 会话安全" bref="检测程序session的安全性" introduce="建议对会话数据进行加密存放" bugdesc="会话安全威胁中最常见的是Session伪造攻击。使用这种方法,可以模仿当前用户的SESSION ID,伪装成这个用户,然后进一步进行SESSION劫持攻击"/>
+      <item id="03030701" score="4:1" level="危险" action="Maunal" name="4.4.3.7 重放攻击" bref="检测应用软件与服务器通信报文被第三方嗅探后是否可以进行重放攻击" introduce="建议将协议中的字段进行复杂化或者加密存储，对协议数据生成一个需要让服务器进行校验的哈希值，防止协议被复制" bugdesc="重放攻击（Replay Attacks）又称重播攻击、回放攻击或新鲜性攻击（Freshness Attacks），是指攻击者发送一个目的主机已接收过的包，来达到欺骗系统的目的，主要用于身份认证过程，破坏认证的正确性。这种攻击会不断恶意或欺诈性地重复一个有效的数据传输，重放攻击可以由发起者，也可以由拦截并重发该数据的敌方进行。攻击者利用网络监听或者其他方式盗取认证凭据，之后再把它重新发给认证服务器。"/>
+    </secitems>
+    <!-- 数据输出 -->
+    <secitems name="数据输出" id="0304" >
+      <item id="03040101" score="2:1:6:3" level="一般" action="Maunal" name="4.4.4.1 调试信息" bref="检测应用运行时是否有调试信息输出，调试信息是否包含敏感数据" introduce="建议不要将敏感信息通过logcat的方式输出" bugdesc="黑客可以根据应用运行时的调试信息获取敏感数据，或者定位关键代码位置"/>
+      <item id="03040201" score="4:1" level="一般" action="Maunal" name="4.4.4.2 敏感信息显示" bref="检测应用对敏感信息进行显示（账号、密码、身份证号等）时是否对部分字段进行屏蔽" introduce="建议应用在对敏感信息进行显示（账号、密码、身份证号等）时应该对部分字段进行屏蔽" bugdesc="如果敏感信息以明文显示则很容易被以截屏，视频录像等方式窃取"/>
+      <item id="03040202" score="4:1" level="一般" action="Maunal" name="4.4.4.2 敏感信息显示" bref="检测应用在进行界面切换后，前一界面的敏感信息是否被清空" introduce="建议对界面切换的时候清空上一次的数据" bugdesc="如果敏感信息以明文显示则很容易被以截屏，视频录像等方式窃取"/>
+    </secitems>
+  </items>
+</root>
