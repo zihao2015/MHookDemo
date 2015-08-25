@@ -58,8 +58,8 @@ public:
 			mCodeAddr = readLeb128(mCodeAddr,&mList->header.instanceFieldsSize);
 			mCodeAddr = readLeb128(mCodeAddr,&mList->header.directMethodsSize);
 			mCodeAddr = readLeb128(mCodeAddr,&mList->header.virtualMethodsSize);
-			Parse("Dex_ClassCode %08x %08x %08x %08x",
-					mList->header.staticFieldsSize,mList->header.instanceFieldsSize,mList->header.directMethodsSize,mList->header.virtualMethodsSize);
+//			Parse("Dex_ClassCode %08x %08x %08x %08x",
+//					mList->header.staticFieldsSize,mList->header.instanceFieldsSize,mList->header.directMethodsSize,mList->header.virtualMethodsSize);
 			for(int m_j =0;m_j < mList->header.staticFieldsSize;m_j++){
 				DexField* mField = (DexField*)Alloc(sizeof(DexField));
 				mCodeAddr = readLeb128(mCodeAddr,&mField->fieldIdx);
