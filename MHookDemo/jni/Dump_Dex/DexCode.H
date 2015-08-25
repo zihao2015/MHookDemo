@@ -76,7 +76,7 @@ public:
 		 DexCodeL* mCode = Code;
 		 while(mCode != NULL){
 			 if(mCode->BS.Offset_Load == inLoadOff){
-				 Parse("Dex_Code LoadToFile %08x %08x",inLoadOff,mCode->BS.Offset_File);
+//				 Parse("Dex_Code LoadToFile %08x %08x",inLoadOff,mCode->BS.Offset_File);
 				 return mCode->BS.Offset_File;
 			 }
 			 mCode = mCode->next;

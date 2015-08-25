@@ -217,10 +217,12 @@ public:
 		DexClassData* mList = ClassD;
 		while(mList != NULL){
 			if(mList->BS.Offset_Load == inLoad){
+				 Parse("Dex_ClassDef %08x %08x",inLoad,mList->BS.Offset_File);
 				return mList->BS.Offset_File;
 			}
 			mList = mList->next;
 		}
+		 Parse("Dex_ClassDef LoadToFile %08x",inLoad);
 		return inLoad;
 	}
 /*

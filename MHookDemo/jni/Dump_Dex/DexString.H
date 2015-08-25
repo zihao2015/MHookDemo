@@ -128,7 +128,7 @@ public:
 		//判断是否存在 IDSString段，不存在就添加IDSString段
 		str_ModMem* modIds =inMem->getByName("StringIDS");
 		if(modIds== NULL){
-			modIds = inMem->newNameMem("StringIDS",getIdsCount()*4);
+			modIds = inMem->newNameMem("StringIDS", AlignAdd(getIdsCount()*4,0x100));
 			Parse("String Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//修改maps偏移地址
