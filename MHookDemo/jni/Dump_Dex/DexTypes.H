@@ -167,6 +167,7 @@ public:
 		str_ModMem* modList =inMem->getByName("TypeList");
 		if(NULL == modList){
 			modList = inMem->newNameMem("TypeList",getCodeLen());
+			Parse("TypeList %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//获取List数据
 		str_ModMem* memCode = inMem->getByName("TypeList");

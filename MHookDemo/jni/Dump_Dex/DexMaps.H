@@ -126,8 +126,10 @@ public:
 		//判断是否存在 IDSString段，不存在就添加IDSString段
 		Parse("Dex_Maps IDStoFile");
 		str_ModMem* modIds =inMem->getByName("MapsIDS");
+
 		if(modIds == NULL){
 			modIds = inMem->newNameMem("MapsIDS",getIdsCount()*12+4);
+			Parse("Dex_Maps DatatoFile %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//设置头系统文件中的数据
 		getTypeOffset(kDexTypeMapList)->offset = modIds->Offset;

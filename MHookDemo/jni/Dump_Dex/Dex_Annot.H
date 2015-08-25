@@ -2,7 +2,6 @@
 #define __Dex_Annot_H_
 #include "Dex_Encoded.H"
 /*
- *
 *关系对应图
 *	Annotation Dir(kDexTypeAnnotationsDirectoryItem)(级别大)
 *		指向

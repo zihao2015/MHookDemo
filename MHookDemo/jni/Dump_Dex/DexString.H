@@ -147,8 +147,10 @@ public:
 	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps){
 		Parse("Dex_String DatatoFile");
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		if(inMem->getByName("StringCode") == NULL){
-			inMem->newNameMem("StringCode",getCodeLen());
+		str_ModMem* modList = inMem->getByName("StringCode");
+		if(NULL == modList){
+			modList = inMem->newNameMem("StringCode",getCodeLen());
+			Parse("Dex_String DatatoFile %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//获取需要关联的两个str_ModMem段(StringIDS和StringCode)
 		str_ModMem* memIds = inMem->getByName("StringIDS");
