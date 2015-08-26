@@ -5,13 +5,21 @@
 #include <sys/stat.h>
 #include <ctype.h>
 //__________________________________________________________
+//内存分割模块
 typedef struct str_ModMem{
+	//下一个内存分割模块
 	struct str_ModMem* next;
+	//数据内存地址
 	unsigned char*	Addr;
+	//加载基本地址
 	unsigned char*	LoadBase;
+	//内存名字
 	char* 	name;
+	//内存宽度
 	size_t 	Length;
+	//文件偏移地址
 	size_t	Offset;
+	//
 	size_t	Base;
 }str_ModMem;
 //__________________________________________________________
@@ -21,7 +29,7 @@ str_ModMem* ModMem = NULL;
 /*
 ************************************************************
 *				Szie
-*1.获取整个内存宽度
+*获取整个内存宽度
 ************************************************************
 */
 	unsigned int Size()
@@ -36,8 +44,7 @@ str_ModMem* ModMem = NULL;
 	}
 /*
 ************************************************************
-*				getByName
-*1.根据模块名字过获取子模块指针
+*根据模块名字过获取子模块指针
 ************************************************************
 */
 	str_ModMem* getByName(const char* inName){
@@ -54,8 +61,7 @@ str_ModMem* ModMem = NULL;
 	}
 /*
 ************************************************************
-*				Last
-*1.获取最后一个内存模块列表
+*获取最后一个内存模块列表
 ************************************************************
 */
 	str_ModMem* Last()
@@ -69,8 +75,7 @@ str_ModMem* ModMem = NULL;
 	}
 /*
 ************************************************************
-*				newMem
-*1.新建一个内存模块，并且将这内存模块添加到尾部
+*新建一个内存模块，并且将这内存模块添加到尾部
 ************************************************************
 */
 	str_ModMem* newMem(size_t in_Length)
@@ -95,8 +100,7 @@ str_ModMem* ModMem = NULL;
 	}
 /*
 ************************************************************
-*				newMem
-*1.新建一个内存模块，并且将这内存模块添加到尾部
+*新建一个内存模块，并且将这内存模块添加到尾部
 ************************************************************
 */
 	str_ModMem* newMem(void* inAddr,size_t in_Length)
@@ -107,8 +111,7 @@ str_ModMem* ModMem = NULL;
 	}
 /*
 ************************************************************
-*				newNameMem
-*1.新建一个内存模块，并且将这内存模块添加到尾部
+*新建一个内存模块，并且将这内存模块添加到尾部
 ************************************************************
 */
 	str_ModMem* newNameMem(const char* inName,size_t in_Length)
@@ -120,64 +123,7 @@ str_ModMem* ModMem = NULL;
 	}
 /*
 ************************************************************
-*				getOffsetAddr
-*1.根据内存模块偏移地址获取到在内存的地址
-************************************************************
-*/
-	unsigned char* getOffsetAddr(size_t in_Off){
-		str_ModMem* mMod = ModMem;
-		unsigned int mMemLength = 0;
-		while(mMod != NULL){
-			if(in_Off < (mMemLength + mMod->Length)){
-				return mMod->Addr+in_Off-mMemLength;
-			}
-			mMemLength += mMod->Length;
-			mMod = mMod->next;
-		}
-		return NULL;
-	}
-/*
-************************************************************
-*				getOffsetAddr_INT
-*1.获取偏移的Int指针
-************************************************************
-*/
-	unsigned int* getOffsetAddr_INT(size_t in_Off){
-		str_ModMem* mMod = ModMem;
-		unsigned int mMemLength = 0;
-		while(mMod != NULL){
-			if(in_Off < (mMemLength + mMod->Length)){
-				return (unsigned int*)(mMod->Addr+in_Off-mMemLength);
-			}
-			mMemLength += mMod->Length;
-			mMod = mMod->next;
-		}
-		return NULL;
-	}
-/*
-************************************************************
-*				getOffsetData_INT
-*1.获取偏移的Int值
-************************************************************
-*/
-	unsigned int getOffsetData_INT(size_t in_Off){
-		str_ModMem* mMod = ModMem;
-		unsigned int mMemLength = 0;
-		while(mMod != NULL){
-			if(in_Off < (mMemLength + mMod->Length)){
-				unsigned int* m_data;
-				m_data = (unsigned int*)((unsigned int)mMod->Addr+in_Off-mMemLength);
-				return *m_data;
-			}
-			mMemLength += mMod->Length;
-			mMod = mMod->next;
-		}
-		return NULL;
-	}
-/*
-************************************************************
-*				SaveFile
-*1.保存成文件
+*保存成文件
 ************************************************************
 */
 	void SaveFile(char* appName,char* inFile){
@@ -224,8 +170,7 @@ str_ModMem* ModMem = NULL;
 	}
 /*
 ************************************************************
-*				getCountBlock
-*1.获取有多少个内存块
+*获取有多少个内存块
 ************************************************************
 */
 	size_t getCountBlock(){
