@@ -40,6 +40,8 @@ void* Dex_Parse(void* in){
 	DumpInfo* Info = (DumpInfo*)in;
 	struct timeval tv;
 	gettimeofday(&tv,NULL);
+	int m_HookS = tv.tv_sec%60;
+	int m_HookM = (tv.tv_sec/60)%24;
 	char* saveName = (char*)malloc(1024);
 	memset(saveName,0,1024);
 	LOGD("inDex:0x%08X,length:0x%08X,DexFile:0x%08X",Info->addr,Info->len,Info->Dex);
@@ -49,22 +51,23 @@ void* Dex_Parse(void* in){
 	Mod_Mem *mem = new Mod_Mem();
 	str_ModMem* mMem = mem->newNameMem("Demo1",Info->len);
 	memcpy(mMem->Addr,(void*)Info->Dex->pHeader,Info->Dex->pHeader->fileSize);
-	sprintf(saveName,"Demo1_%08x.dex",tv.tv_sec);
+
+	sprintf(saveName,"Demo2_%d_%d.dex",m_HookM,m_HookS);
 	mem->SaveFile(AppName,saveName);
 	DumpD("延时15S!");
-	sleep(5);
+	sleep(10);
 	DumpD("下载Demo2!");
 	//版本2.Dump
 	mem = new Mod_Mem();
 	mMem = mem->newNameMem("Demo2",Info->len);
 	memcpy(mMem->Addr,(void*)Info->Dex->pHeader,Info->Dex->pHeader->fileSize);
-	sprintf(saveName,"Demo2_%08x.dex",tv.tv_sec);
+	sprintf(saveName,"Demo1_%d_%d.dex",m_HookM,m_HookS);
 	mem->SaveFile(AppName,saveName);
 	DumpD("下载Demo3 ing!");
 	//版本3.只修复ClassDef
 	DexParse* parse = new DexParse(Info->addr,Info->Dex);
 	memset(saveName,0,1024);
-	sprintf(saveName,"Demo3_%08x.dex",tv.tv_sec);
+	sprintf(saveName,"Demo3_%d_%d.dex",m_HookM,m_HookS);
 	parse->DumpToFile(AppName,saveName);
 	//
 	return NULL;

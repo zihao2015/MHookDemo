@@ -29,10 +29,8 @@ typedef struct DexClassData {
 	struct DexClassData* next;
 	Base	BS;
 	DexClassDataHeader header;
-	DexField*          staticFields;
-	DexField*          instanceFields;
-	DexMethod*         directMethods;
-	DexMethod*         virtualMethods;
+	DexField*	Fields;
+	DexMethod* 	Methods;
 } DexClassData;
 class Dex_ClassCode : DexUtil{
 public:
@@ -60,35 +58,18 @@ public:
 			mCodeAddr = readLeb128(mCodeAddr,&mList->header.virtualMethodsSize);
 //			Parse("Dex_ClassCode %08x %08x %08x %08x",
 //					mList->header.staticFieldsSize,mList->header.instanceFieldsSize,mList->header.directMethodsSize,mList->header.virtualMethodsSize);
-			for(int m_j =0;m_j < mList->header.staticFieldsSize;m_j++){
+			for(int m_j =0;m_j < (mList->header.staticFieldsSize+mList->header.instanceFieldsSize);m_j++){
 				DexField* mField = (DexField*)Alloc(sizeof(DexField));
 				mCodeAddr = readLeb128(mCodeAddr,&mField->fieldIdx);
 				mCodeAddr = readLeb128(mCodeAddr,&mField->accessFlags);
-				mList->staticFields =(DexField*)AddToLast(mList->staticFields,mField);
+				mList->Fields =(DexField*)AddToLast(mList->Fields,mField);
 			}
-			for(int m_j =0;m_j < mList->header.instanceFieldsSize;m_j++){
-				DexField* mField = (DexField*)Alloc(sizeof(DexField));
-				mCodeAddr = readLeb128(mCodeAddr,&mField->fieldIdx);
-				mCodeAddr = readLeb128(mCodeAddr,&mField->accessFlags);
-				mList->instanceFields =(DexField*)AddToLast(mList->instanceFields,mField);
-			}
-			for(int m_j =0;m_j < mList->header.directMethodsSize;m_j++){
+			for(int m_j =0;m_j < (mList->header.directMethodsSize+ mList->header.virtualMethodsSize);m_j++){
 				DexMethod* mMethod = (DexMethod*)Alloc(sizeof(DexMethod));
 				mCodeAddr = readLeb128(mCodeAddr,&mMethod->methodIdx);
 				mCodeAddr = readLeb128(mCodeAddr,&mMethod->accessFlags);
 				mCodeAddr = readLeb128(mCodeAddr,&mMethod->codeOff);
-				mList->directMethods =(DexMethod*)AddToLast(mList->directMethods,mMethod);
-				if(mMethod->codeOff != 0){
-					code->Add(inDex,mMethod->codeOff);
-					MethodNum++;
-				}
-			}
-			for(int m_j =0;m_j < mList->header.virtualMethodsSize;m_j++){
-				DexMethod* mMethod = (DexMethod*)Alloc(sizeof(DexMethod));
-				mCodeAddr = readLeb128(mCodeAddr,&mMethod->methodIdx);
-				mCodeAddr = readLeb128(mCodeAddr,&mMethod->accessFlags);
-				mCodeAddr = readLeb128(mCodeAddr,&mMethod->codeOff);
-				mList->virtualMethods =(DexMethod*)AddToLast(mList->virtualMethods,mMethod);
+				mList->Methods =(DexMethod*)AddToLast(mList->Methods,mMethod);
 				if(mMethod->codeOff != 0){
 					code->Add(inDex,mMethod->codeOff);
 					MethodNum++;
@@ -117,6 +98,9 @@ public:
 			modList = inMem->newNameMem("Code",GetSize(ClassD));
 			Parse("ClassD %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
+		//
+		inmaps->setTypeOffset(kDexTypeCodeItem,modList->Offset);
+		//
 		DexClassData* mList = ClassD;
 		u1* mAddr = modList->Addr;
 		while(mList != NULL){
@@ -126,27 +110,13 @@ public:
 			mAddr = writeL128(mAddr,mList->header.instanceFieldsSize);
 			mAddr = writeL128(mAddr,mList->header.directMethodsSize);
 			mAddr = writeL128(mAddr,mList->header.virtualMethodsSize);
-			DexField* mField = mList->staticFields;
+			DexField* mField = mList->Fields;
 			while(mField != NULL){
 				mAddr = writeL128(mAddr,mField->fieldIdx);
 				mAddr = writeL128(mAddr,mField->accessFlags);
 				mField = mField->next;
 			}
-			mField = mList->instanceFields;
-			while(mField != NULL){
-				mAddr = writeL128(mAddr,mField->fieldIdx);
-				mAddr = writeL128(mAddr,mField->accessFlags);
-				mField = mField->next;
-			}
-			DexMethod* mMethod = mList->directMethods;
-			while(mMethod != NULL){
-				mAddr = writeL128(mAddr,mMethod->methodIdx);
-				mAddr = writeL128(mAddr,mMethod->accessFlags);
-				//Load To File
-				mAddr = writeL128(mAddr,code->LoadToFile(mMethod->codeOff));
-				mMethod = mMethod->next;
-			}
-			mMethod = mList->virtualMethods;
+			DexMethod* mMethod = mList->Methods;
 			while(mMethod != NULL){
 				mAddr = writeL128(mAddr,mMethod->methodIdx);
 				mAddr = writeL128(mAddr,mMethod->accessFlags);
@@ -175,27 +145,13 @@ public:
 			mAddr = writeL128(mAddr,mList->header.instanceFieldsSize);
 			mAddr = writeL128(mAddr,mList->header.directMethodsSize);
 			mAddr = writeL128(mAddr,mList->header.virtualMethodsSize);
-			DexField* mField = mList->staticFields;
+			DexField* mField = mList->Fields;
 			while(mField != NULL){
 				mAddr = writeL128(mAddr,mField->fieldIdx);
 				mAddr = writeL128(mAddr,mField->accessFlags);
 				mField = mField->next;
 			}
-			mField = mList->instanceFields;
-			while(mField != NULL){
-				mAddr = writeL128(mAddr,mField->fieldIdx);
-				mAddr = writeL128(mAddr,mField->accessFlags);
-				mField = mField->next;
-			}
-			DexMethod* mMethod = mList->directMethods;
-			while(mMethod != NULL){
-				mAddr = writeL128(mAddr,mMethod->methodIdx);
-				mAddr = writeL128(mAddr,mMethod->accessFlags);
-				//Load To File
-				mAddr = writeL128(mAddr,code->LoadToFile(mMethod->codeOff));
-				mMethod = mMethod->next;
-			}
-			mMethod = mList->virtualMethods;
+			DexMethod* mMethod = mList->Methods;
 			while(mMethod != NULL){
 				mAddr = writeL128(mAddr,mMethod->methodIdx);
 				mAddr = writeL128(mAddr,mMethod->accessFlags);
