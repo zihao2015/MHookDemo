@@ -149,7 +149,7 @@ public:
 		//判断是否存在 IDSString段，不存在就添加IDSString段
 		str_ModMem* modList = inMem->getByName("StringCode");
 		if(NULL == modList){
-			modList = inMem->newNameMem("StringCode",getCodeLen());
+			modList = inMem->newNameMem("StringCode",AlignAdd(getCodeLen(),0x100));
 			Parse("Dex_String DatatoFile %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//获取需要关联的两个str_ModMem段(StringIDS和StringCode)

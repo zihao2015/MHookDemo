@@ -203,7 +203,7 @@ public:
 		Parse("Code DatatoFile");
 		str_ModMem* modList =inMem->getByName("Code");
 		if(NULL == modList){
-			modList = inMem->newNameMem("Code",GetSize(Code));
+			modList = inMem->newNameMem("Code",AlignAdd(GetSize(Code),0x1000));
 			Parse("Code %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置Code

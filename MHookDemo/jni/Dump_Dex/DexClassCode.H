@@ -99,7 +99,7 @@ public:
 			Parse("ClassD %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//
-		inmaps->setTypeOffset(kDexTypeCodeItem,modList->Offset);
+		inmaps->setTypeOffset(kDexTypeClassDataItem,modList->Offset);
 		//
 		DexClassData* mList = ClassD;
 		u1* mAddr = modList->Addr;
