@@ -48,6 +48,7 @@ public:
 */
 	Dex_String(DexFile* inDex){
 		Parse("Dex_String");
+		stringItem* strItem = NULL;
 		//获取IDS实际内存地址
 		u4* mMemIds =(u4*)((u4)inDex->pHeader + inDex->pHeader->stringIdsOff);
 		//遍历字符串
@@ -62,14 +63,17 @@ public:
 			if(_item->L128Code > _item->strLen){
 				_item->strLen = _item->L128Code;
 			}
-//			Parse("Dex_String %08x",_item->strLen);
 			//不申请内存存放字符串，直接指向DexFile文件内存
-//			_item->str = (char*)Alloc(_item->strLen+1);
-//			memcpy(_item->str,mMemCode,_item->strLen);
 			_item->str = (char*)mMemCode;
 			_item->size = _item->strLen + _item->L128Len + 1;
-			//将字符串添加到列表中
-			Idsitem = (stringItem*)AddToLast(Idsitem,_item);
+			//将字符串添加到列表中，AddToLast非常耗时
+			if(Idsitem == NULL){
+				Idsitem = _item;
+				strItem = _item;
+			}else{
+
+				strItem = (stringItem*)AddLink(strItem,_item);
+			}
 			//指向下一个字符串
 			mMemIds++;
 		}

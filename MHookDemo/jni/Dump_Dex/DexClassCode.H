@@ -42,6 +42,7 @@ public:
 ************************************************************
 */
 	Dex_ClassCode(DexFile* inDex,Dex_Maps* inmaps,Dex_Code* code){
+		Parse("Dex_ClassCode");
 		//MethodNum为添加，Code个数
 		mapsItem* inMapClassCode =inmaps->getTypeOffset(kDexTypeClassDataItem);
 		int MethodNum = 0;
@@ -49,6 +50,7 @@ public:
 		u1* mCodeAddr =(u1*)((u4)inDex->pHeader + inMapClassCode->offset);
 		//遍历全部的DexClassData
 		for(int m_i =0;m_i < inMapClassCode->size;m_i++){
+			Parse("Dex_ClassCode %d",m_i);
 			DexClassData* mList = (DexClassData*)Alloc(sizeof(DexClassData));
 			//获取加载偏移
 			mList->BS.Offset_Load = (u4)mCodeAddr -(u4)inDex->pHeader;
@@ -56,15 +58,15 @@ public:
 			mCodeAddr = readLeb128(mCodeAddr,&mList->header.instanceFieldsSize);
 			mCodeAddr = readLeb128(mCodeAddr,&mList->header.directMethodsSize);
 			mCodeAddr = readLeb128(mCodeAddr,&mList->header.virtualMethodsSize);
-//			Parse("Dex_ClassCode %08x %08x %08x %08x",
-//					mList->header.staticFieldsSize,mList->header.instanceFieldsSize,mList->header.directMethodsSize,mList->header.virtualMethodsSize);
-			for(int m_j =0;m_j < (mList->header.staticFieldsSize+mList->header.instanceFieldsSize);m_j++){
+			size_t msize =mList->header.staticFieldsSize + mList->header.instanceFieldsSize;
+			for(int m_j =0;m_j < msize;m_j++){
 				DexField* mField = (DexField*)Alloc(sizeof(DexField));
 				mCodeAddr = readLeb128(mCodeAddr,&mField->fieldIdx);
 				mCodeAddr = readLeb128(mCodeAddr,&mField->accessFlags);
 				mList->Fields =(DexField*)AddToLast(mList->Fields,mField);
 			}
-			for(int m_j =0;m_j < (mList->header.directMethodsSize+ mList->header.virtualMethodsSize);m_j++){
+			msize =mList->header.directMethodsSize + mList->header.virtualMethodsSize;
+			for(int m_j =0;m_j < msize ;m_j++){
 				DexMethod* mMethod = (DexMethod*)Alloc(sizeof(DexMethod));
 				mCodeAddr = readLeb128(mCodeAddr,&mMethod->methodIdx);
 				mCodeAddr = readLeb128(mCodeAddr,&mMethod->accessFlags);
@@ -173,7 +175,7 @@ public:
 		DexClassData* mList = ClassD;
 		while(mList != NULL){
 			if(mList->BS.Offset_Load == inLoad){
-				 Parse("Dex_ClassDef %08x %08x",inLoad,mList->BS.Offset_File);
+				Parse("Dex_ClassDef %08x %08x",inLoad,mList->BS.Offset_File);
 				return mList->BS.Offset_File;
 			}
 			mList = mList->next;

@@ -56,6 +56,8 @@ typedef struct Link{
 ************************************************************
 *				AddToLast
 *将数据添加到链表
+*如果不保存连接最后指，使用AddToLast是一个非常耗时的操作
+*所以使用一个AddLink函数
 ************************************************************
 */
 void* AddToLast(void* inSrc,void* in_next){
@@ -66,6 +68,20 @@ void* AddToLast(void* inSrc,void* in_next){
 	}
 	Src->next = (Link*)in_next;
 	return inSrc;
+}
+/*
+************************************************************
+*				AddLink
+*将数据添加到链表
+*只是设置链表指向，返回下一个链表
+************************************************************
+*/
+
+void* AddLink(void* inSrc,void* in_next){
+	if((NULL == inSrc)||(NULL == in_next))return NULL;
+	Link* Src = (Link*)inSrc;
+	Src->next = (Link*)in_next;
+	return in_next;
 }
 /*
 ************************************************************

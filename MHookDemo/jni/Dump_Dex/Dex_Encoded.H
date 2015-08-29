@@ -69,6 +69,7 @@ public:
 ************************************************************
 */
 	Dex_Encoded(DexFile* inDex,Dex_Maps* inmaps){
+		Parse("[+]Dex_Encoded");
 		//设置起始地址
 		mapsItem* inMapEncoded = inmaps->getTypeOffset(kDexTypeEncodedArrayItem);
 		u1* encodedIds =(u1*)((u1*)inDex->pHeader + inMapEncoded->offset);

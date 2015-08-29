@@ -1,6 +1,6 @@
 obj/local/armeabi/objs/-Dump_Dex/Dump_Dex/Dump_Dex.o: \
  jni/Dump_Dex/Dump_Dex.cpp \
- D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/stdio.h \
+ D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/time.h \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/cdefs.h \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/cdefs_elf.h \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/android/api-level.h \
@@ -19,7 +19,6 @@ obj/local/armeabi/objs/-Dump_Dex/Dump_Dex/Dump_Dex.o: \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/asm/posix_types.h \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/asm-generic/posix_types.h \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/sysmacros.h \
- D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/time.h \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/linux/time.h \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/unistd.h \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/select.h \
@@ -54,6 +53,7 @@ obj/local/armeabi/objs/-Dump_Dex/Dump_Dex/Dump_Dex.o: \
  jni/HFile/NativeLog.h \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/android/log.h \
  jni/Dump_Dex/Dump_Dex.H jni/Dump_Dex/Module_Mem.H \
+ D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/stdio.h \
  D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/ctype.h \
  jni/Dump_Dex/DexParse.H jni/Dump_Dex/DexUtil.H jni/Dump_Dex/DexHeader.H \
  jni/Dump_Dex/DexString.H jni/Dump_Dex/DexMaps.H jni/Dump_Dex/DexTypes.H \
@@ -63,7 +63,7 @@ obj/local/armeabi/objs/-Dump_Dex/Dump_Dex/Dump_Dex.o: \
  jni/Dump_Dex/DexClassCode.H jni/Dump_Dex/DexCode.H \
  jni/Dump_Dex/DexDebug.H
 
-D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/stdio.h:
+D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/time.h:
 
 D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/cdefs.h:
 
@@ -100,8 +100,6 @@ D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/asm/
 D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/asm-generic/posix_types.h:
 
 D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/sysmacros.h:
-
-D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/time.h:
 
 D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/linux/time.h:
 
@@ -172,6 +170,8 @@ D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/andr
 jni/Dump_Dex/Dump_Dex.H:
 
 jni/Dump_Dex/Module_Mem.H:
+
+D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/stdio.h:
 
 D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/ctype.h:
 

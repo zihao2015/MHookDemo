@@ -273,7 +273,6 @@ public:
 		Dex_Ann_Set(inDex,maps);
 		Parse("[+]Dex_AnnotDir");
 		Dex_AnnotDir(inDex,maps);
-		Parse("[+]Dex_Over");
 	}
 
 /*

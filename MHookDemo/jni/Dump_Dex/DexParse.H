@@ -141,6 +141,7 @@ public:
 		//解析ClassData  然后根据内容解析Dex_Code
 		code = new Dex_Code(inDex);
 		classCode = new Dex_ClassCode(inDex,maps,code);
+		Parse("Parse Over");
 	}
 };
 
