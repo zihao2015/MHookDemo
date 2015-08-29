@@ -95,7 +95,7 @@ public:
 		Parse("ClassD DatatoFile");
 		str_ModMem* modList =inMem->getByName("ClassData");
 		if(NULL == modList){
-			modList = inMem->newNameMem("Code",GetSize(ClassD));
+			modList = inMem->newNameMem("Code",AlignAdd(GetSize(ClassD),0x100));
 			Parse("ClassD %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//

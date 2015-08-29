@@ -211,7 +211,7 @@ unsigned char* writeL128(unsigned char* inAddr,u4 mData){
 	return NEXTLeb128(inAddr);
 }
 unsigned char* writeSL128(unsigned char* inAddr,u4 mData){
-	if(mData&0x80000000){
+	if((mData&0x80000000) == 0){
 		writeL128(inAddr,mData);
 	}else{
 		unsigned int m_Data = 0xFFFFFFFF;

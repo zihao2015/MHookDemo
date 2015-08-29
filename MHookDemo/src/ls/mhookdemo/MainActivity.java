@@ -5,8 +5,6 @@ import java.util.*;
 import ls.client.TimeLog;
 import ls.hook.Root;
 import ls.mhookdemo.R;
-import ls.mhookdemo.R.id;
-import ls.mhookdemo.R.layout;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;

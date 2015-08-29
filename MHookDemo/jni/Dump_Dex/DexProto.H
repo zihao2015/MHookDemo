@@ -56,10 +56,10 @@ public:
 /*
 ************************************************************
 *				IDStoFile
-*将ProtoIDS宽度放入Mod_Mem模块中,并设置数据
+*将ProtoIDS宽度放入Mod_Mem模块中,
 ************************************************************
 */
-	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps,Dex_Types* inType){
+	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
 		Parse("Dex_Proto IDStoFile");
 		str_ModMem* modIds =inMem->getByName("ProtoIDS");
@@ -72,17 +72,37 @@ public:
 		inmaps->getTypeOffset(kDexTypeProtoIdItem)->size = getIdsCount();
 		inheader->Header->protoIdsOff = modIds->Offset;
 		inheader->Header->protoIdsSize = getIdsCount();
-		//设置Proto IDS数据
-		ProtoItem* mitem = Idsitem;
-		DexProtoId* mID = (DexProtoId*)modIds->Addr;
-		while(mitem != NULL){
-			mID->shortyIdx = mitem->shortyIdx;
-			mID->returnTypeIdx = mitem->returnTypeIdx;
-			mID->parametersOff = inType->LoadToFile(mitem->parametersOff);
-			mitem = mitem->next;
-			mID++;
-		}
 	}
+/*
+************************************************************
+*				DatatoFile
+*主要设置根据Type list 地址设置偏移
+************************************************************
+*/
+	void DatatoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps,Dex_Types* inType){
+			//判断是否存在 IDSString段，不存在就添加IDSString段
+			Parse("Dex_Proto IDStoFile");
+			str_ModMem* modIds =inMem->getByName("ProtoIDS");
+			if(modIds== NULL){
+				modIds = inMem->newNameMem("ProtoIDS",getIdsCount()*12);
+				Parse("Proto Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			}
+			//修改maps偏移地址
+			inmaps->getTypeOffset(kDexTypeProtoIdItem)->offset = modIds->Offset;
+			inmaps->getTypeOffset(kDexTypeProtoIdItem)->size = getIdsCount();
+			inheader->Header->protoIdsOff = modIds->Offset;
+			inheader->Header->protoIdsSize = getIdsCount();
+			//设置Proto IDS数据
+			ProtoItem* mitem = Idsitem;
+			DexProtoId* mID = (DexProtoId*)modIds->Addr;
+			while(mitem != NULL){
+				mID->shortyIdx = mitem->shortyIdx;
+				mID->returnTypeIdx = mitem->returnTypeIdx;
+				mID->parametersOff = inType->LoadToFile(mitem->parametersOff);
+				mitem = mitem->next;
+				mID++;
+			}
+		}
 /*
 ************************************************************
 *				SetMemory

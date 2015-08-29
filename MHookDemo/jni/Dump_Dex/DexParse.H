@@ -62,7 +62,7 @@ public:
 		header->IDStoFile(mem);
 		string->IDStoFile(mem,header,maps);
 		types->IDStoFile(mem,header,maps);
-		proto->IDStoFile(mem,header,maps,types);
+		proto->IDStoFile(mem,header,maps);
 		fileds->IDStoFile(mem,header,maps);
 		methods->IDStoFile(mem,header,maps);
 		classdef->IDStoFile(mem,header,maps);
@@ -71,6 +71,9 @@ public:
 	//解析IDS对应的数据(code)
 		//TypeList
 		types->DatatoFile(mem,maps);
+		//proto(需要TypeList偏移地址)
+		proto->DatatoFile(mem,header,maps,types);
+		//
 		annot->AnnotToData(mem,maps);
 		annot->AnnotSetToData(mem,maps);
 		annot->AnnotSRLToData(mem,maps);

@@ -52,7 +52,7 @@ void* Dex_Parse(void* in){
 	str_ModMem* mMem = mem->newNameMem("Demo1",Info->len);
 	memcpy(mMem->Addr,(void*)Info->Dex->pHeader,Info->Dex->pHeader->fileSize);
 
-	sprintf(saveName,"Demo2_%d_%d.dex",m_HookM,m_HookS);
+	sprintf(saveName,"Demo1_%02d_%02d.dex",m_HookM,m_HookS);
 	mem->SaveFile(AppName,saveName);
 	DumpD("延时15S!");
 	sleep(10);
@@ -61,13 +61,13 @@ void* Dex_Parse(void* in){
 	mem = new Mod_Mem();
 	mMem = mem->newNameMem("Demo2",Info->len);
 	memcpy(mMem->Addr,(void*)Info->Dex->pHeader,Info->Dex->pHeader->fileSize);
-	sprintf(saveName,"Demo1_%d_%d.dex",m_HookM,m_HookS);
+	sprintf(saveName,"Demo2_%02d_%02d.dex",m_HookM,m_HookS);
 	mem->SaveFile(AppName,saveName);
 	DumpD("下载Demo3 ing!");
 	//版本3.只修复ClassDef
 	DexParse* parse = new DexParse(Info->addr,Info->Dex);
 	memset(saveName,0,1024);
-	sprintf(saveName,"Demo3_%d_%d.dex",m_HookM,m_HookS);
+	sprintf(saveName,"Demo3_%02d_%02d.dex",m_HookM,m_HookS);
 	parse->DumpToFile(AppName,saveName);
 	//
 	return NULL;
