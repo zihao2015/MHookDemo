@@ -94,33 +94,25 @@ public:
 ************************************************************
 */
 	void Add(DexFile* inDex,u4 inOffset){
-		static int mAddTimes = 1;
-		Parse("Dex_Code Add:%d",mAddTimes++);
 		DexCodeL* mCode = (DexCodeL*)Alloc(sizeof(DexCodeL));
 		//设置加载偏移地址 设置文件内存地址
 		mCode->BS.SetLoadOffset(inOffset);
 		u1* mMem =(u1*)((u4)inDex->pHeader + inOffset);
 		u4	mMemStart =(u4)mMem;
 		//复制DexCodeL
-		mCode->Size_Reg =*(u2*)mMem;
-		mMem += 2;
-		mCode->Size_inArg =*(u2*)mMem;
-		mMem += 2;
-		mCode->Size_outArg =*(u2*)mMem;
-		mMem += 2;
-		mCode->Size_Tries =*(u2*)mMem;
-		mMem += 2;
-		mCode->DebugInfo =*(u4*)mMem;
-		mMem += 4;
-		mCode->Size_Code =*(u4*)mMem;
-		mMem += 4;
+		mCode->Size_Reg = *(u2*)mMem;mMem += 2;
+		mCode->Size_inArg =*(u2*)mMem;mMem += 2;
+		mCode->Size_outArg =*(u2*)mMem;mMem += 2;
+		mCode->Size_Tries =*(u2*)mMem;mMem += 2;
+		mCode->DebugInfo =*(u4*)mMem;mMem += 4;
+		mCode->Size_Code =*(u4*)mMem;mMem += 4;
 		//获取整个方法代码宽度、然后对齐、定方位代码尾端，查看是否有其他数据
-		mCode->CodeSize = mCode->Size_Code*2;
-		mCode->CodeSize =(mCode->CodeSize+3)&(~3);
+		mCode->CodeSize =(mCode->Size_Code*2+3)&(~3);
 		mCode->CodeInfo = (void*)mMem;
+		mMem += mCode->CodeSize;
 		//判断是否存在Try 和Catch,然后获取异常宽度
 		if(mCode->Size_Tries != 0){
-			mCode->CodeInfo =	(void*)mMem;
+			mCode->Try_CatchIngfo = (void*)mMem;
 			//解析TryCatch分支	 Number of instructions in try
 			for(int m_i = 0;m_i < mCode->Size_Tries;m_i++){
 					DexTryL* mTry  =(DexTryL*)Alloc(sizeof(DexTryL));
@@ -130,7 +122,7 @@ public:
 					mMem += 2;
 					mTry->Offset_Handler =*(u2*)mMem;
 					mMem += 2;
-		//			mCode->Try =  (DexTryL*)AddToLast(mCode->Try,mTry);
+					mCode->Try =  (DexTryL*)AddToLast(mCode->Try,mTry);
 			}
 			// # Number of catch handler blocks: 0x2
 			mMem = readLeb128(mMem,&mCode->CatchBlocks);
@@ -156,30 +148,17 @@ public:
 						mMem = readLeb128(mMem,&mList->catch_all);
 					}
 				}
-//				mCode->Catch =  (DexCatchListL*)AddToLast(mCode->Catch,mList);
+				mCode->Catch =  (DexCatchListL*)AddToLast(mCode->Catch,mList);
 			}
 			//设置内存大小，必须对齐,
 			mMem = (u1*)((u4)(mMem+3)&(~3));
 			//直接获取保存数据
 			mCode->Try_CatchSize =(u4)mMem - (u4)mCode->Try_CatchIngfo;
+			Parse("Code  Try_CatchIngfo %08x %08x",mCode->Try_CatchIngfo,mCode->Try_CatchSize);
 		}
+
 		mCode->BS.SetMemSize((u4)mMem - mMemStart);
 		Code =  (DexCodeL*)AddToLast(Code,mCode);
-	}
-/*
-************************************************************
-*				getCodeLen
-*获取需要多少的Code空间*
-************************************************************
-*/
-	size_t getCodeLen(){
-		size_t msize = 0;
-		DexCodeL* mCode = Code;
-		while(mCode != NULL){
-			msize += mCode->BS.MemSize;
-			mCode = (DexCodeL*)mCode->next;
-		}
-		return msize;
 	}
 /*
 ************************************************************
@@ -197,28 +176,33 @@ public:
 		str_ModMem* modList =inMem->getByName("Code");
 		if(NULL == modList){
 			modList = inMem->newNameMem("Code",AlignAdd(GetSize(Code),0x1000));
-			Parse("Code %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
+			Parse("Code Addr %08x Length %08x Offset %08x",modList->Addr,modList->Length,modList->Offset);
+			Parse("Code  GetCount %08x ",GetCount(Code));
 		}
 		//设置Code
 		inmaps->setTypeOffset(kDexTypeCodeItem,modList->Offset);
 		//
 		DexCodeL* mCode = Code;
 		u1* mMem = modList->Addr;
+		int m_i = 0;
 		while(NULL != mCode){
+			Parse("Code ");
 			mCode->BS.SetFileOffset(AddAddr2(mMem,SubAddr2(modList->Offset,modList->Addr)));
 			//复制数据到内存
 			*(u2*)mMem =mCode->Size_Reg;mMem+=2;
 			*(u2*)mMem =mCode->Size_inArg;mMem+=2;
 			*(u2*)mMem =mCode->Size_outArg;mMem+=2;
 			*(u2*)mMem =mCode->Size_Tries;mMem+=2;
-			*(u4*)mMem =mCode->DebugInfo;mMem+=4;	//可能需要修改
+			*(u4*)mMem =mCode->DebugInfo;mMem+=4;
+			//可能需要修改
 			*(u4*)mMem =mCode->Size_Code;mMem+=4;
-			//获取代码宽度,对齐宽度
-			u4 mCodeSize = mCode->CodeSize;
+			//获取代码宽Size_Code
+			Parse("Code  CodeInfo");
 			memcpy(mMem,mCode->CodeInfo,mCode->CodeSize);
 			mMem += mCode->CodeSize;
 			//Try_Catch分支，是直接拷贝过来的，因为里面代码于位置无关，
 			if(mCode->Size_Tries != 0){
+				Parse("Code  Try_CatchIngfo %08x %08x",mCode->Try_CatchIngfo,mCode->Try_CatchSize);
 				memcpy(mMem,mCode->Try_CatchIngfo,mCode->Try_CatchSize);
 				mMem += mCode->Try_CatchSize;
 			}

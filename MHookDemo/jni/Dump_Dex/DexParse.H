@@ -89,7 +89,6 @@ public:
 	//Code
 		code->DatatoFile(mem,maps);
 		classCode->DatatoFile(mem,maps,code);
-	//
 		string->DatatoFile(mem,maps);
 		classdef->DatatoFile(mem,types,annot,encoded,classCode);
 	//根据DUMP数据正在修改MAPS和Header

@@ -21,9 +21,10 @@ bool (*_dvmLoadNativeCode)(char* pathName, void* classLoader, char** detail);
 bool My_dvmLoadNativeCode(char* pathName, void* classLoader, char** detail){
 	//获取打印加载SO  进程和ID
 	char* mName = getSelfCmdline();
-	LOGD("dvmLoadNativeCode Config:%s",Config);
-	LOGD("dvmLoadNativeCode:%s",pathName);
-	LOGD("dvmLoadNativeCode name:%s,tid:%d",mName,gettid());	
+	LOGD("My_dvmLoadNativeCode ");
+	LOGD("Config:%s",Config);
+	LOGD("pathName:%s",pathName);
+	LOGD("name:%s,tid:%d",mName,gettid());
 	//判断是否找到工作路径, 先查找工作路径
 	if(AppName == NULL){
 		//判断/data/data/%s/ ,  mName是否存在
