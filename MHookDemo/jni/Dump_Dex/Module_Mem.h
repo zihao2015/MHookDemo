@@ -159,7 +159,6 @@ str_ModMem* ModMem = NULL;
 			}else{
 				DumpD("正在下载:NULL");
 			}
-
 			fwrite(mMod->Addr,1,mMod->Length,mfd);
 			mMod = mMod->next;
 		}

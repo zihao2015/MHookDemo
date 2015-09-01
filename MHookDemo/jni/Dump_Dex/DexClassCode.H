@@ -123,7 +123,11 @@ public:
 				mAddr = writeL128(mAddr,mMethod->methodIdx);
 				mAddr = writeL128(mAddr,mMethod->accessFlags);
 				//Load To File
-				mAddr = writeL128(mAddr,code->LoadToFile(mMethod->codeOff));
+				if(code != NULL){
+					mAddr = writeL128(mAddr,code->LoadToFile(mMethod->codeOff));
+				}else{
+					mAddr = writeL128(mAddr,mMethod->codeOff);
+				}
 				mMethod = mMethod->next;
 			}
 			mList = mList->next;

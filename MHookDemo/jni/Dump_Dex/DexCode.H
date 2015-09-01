@@ -1,5 +1,7 @@
 #ifndef __DexCode_H_
 #define __DexCode_H_
+
+#include "DexDebug.H"
 //__________________________________________________________
  /*
  * Direct-mapped "try_item".
@@ -166,7 +168,7 @@ public:
 *设置DatatoFile*
 ************************************************************
 */
-	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps){
+	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps,Dex_Debug* debug){
 		if(NULL == Code){
 			Parse("没有存在Code数据,直接退出!");
 			return ;
@@ -186,23 +188,20 @@ public:
 		u1* mMem = modList->Addr;
 		int m_i = 0;
 		while(NULL != mCode){
-			Parse("Code ");
 			mCode->BS.SetFileOffset(AddAddr2(mMem,SubAddr2(modList->Offset,modList->Addr)));
 			//复制数据到内存
 			*(u2*)mMem =mCode->Size_Reg;mMem+=2;
 			*(u2*)mMem =mCode->Size_inArg;mMem+=2;
 			*(u2*)mMem =mCode->Size_outArg;mMem+=2;
 			*(u2*)mMem =mCode->Size_Tries;mMem+=2;
-			*(u4*)mMem =mCode->DebugInfo;mMem+=4;
+			*(u4*)mMem = debug->LoadToFile(mCode->DebugInfo);mMem+=4;
 			//可能需要修改
 			*(u4*)mMem =mCode->Size_Code;mMem+=4;
 			//获取代码宽Size_Code
-			Parse("Code  CodeInfo");
 			memcpy(mMem,mCode->CodeInfo,mCode->CodeSize);
 			mMem += mCode->CodeSize;
 			//Try_Catch分支，是直接拷贝过来的，因为里面代码于位置无关，
 			if(mCode->Size_Tries != 0){
-				Parse("Code  Try_CatchIngfo %08x %08x",mCode->Try_CatchIngfo,mCode->Try_CatchSize);
 				memcpy(mMem,mCode->Try_CatchIngfo,mCode->Try_CatchSize);
 				mMem += mCode->Try_CatchSize;
 			}

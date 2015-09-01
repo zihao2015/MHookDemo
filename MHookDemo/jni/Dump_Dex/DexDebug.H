@@ -1,5 +1,6 @@
 #ifndef __DexDebug_H_
 #define __DexDebug_H_
+#include "DexUtil.H"
 struct DebugItem{
 	DebugItem* 	next;
 	u4	param_name;
@@ -53,6 +54,7 @@ public:
 					_List->Item = (DebugItem*)AddToLast(_List->Item,_Item);
 				}
 			}while(mData != 0);
+			_List->BS.MemSize = SubAddr3(mMem,_List->BS.Offset_Load,inDex->pHeader);
 			debug =  (DebugList*)AddToLast(debug,_List);
 		}
 	}
@@ -71,13 +73,13 @@ public:
 		Parse("Dex_Debug DatatoFile");
 		str_ModMem* modList =inMem->getByName("DebugInfo");
 		if(NULL == modList){
-			modList = inMem->newNameMem("DebugInfo",GetSize(debug));
+			modList = inMem->newNameMem("DebugInfo",AlignAdd(GetSize(debug),0x04));
 			Parse("debug %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		U1*	mMem = modList->Addr;
 		DebugList* _List =debug;
 		while(NULL != _List){
-			_List->BS.MemSize = AddAddr2(modList->Offset,SubAddr2(mMem,modList->Addr));
+			_List->BS.Offset_File = AddAddr2(modList->Offset,SubAddr2(mMem,modList->Addr));
 			mMem = writeL128(mMem,_List->number);
 			mMem = writeL128(mMem,_List->Size_Reg);
 			DebugItem* _Item = _List->Item;
@@ -90,28 +92,20 @@ public:
 	}
 /*
 ************************************************************
-*				SetMemory
-*设置SetMemory*
+*				LoadToFile
+*将加载地址改变为文件偏移地址
 ************************************************************
 */
-	void SetMemory(str_ModMem* inMem,Dex_Maps* inMap){
-		inMap->getTypeOffset(kDexTypeDebugInfoItem)->offset = inMem->Offset;
-		Parse("Dex_Debug@SetMemory:%08x",inMem->Offset);
-		UInt mMemStart =(UInt)inMem->Addr;
-		U1*	mMem = inMem->Addr;
-		DebugList* _List =debug;
-		while(_List != NULL){
-			_List->BS.SetFileOffset((u4)mMem-mMemStart+inMem->Offset);
-			mMem =  writeL128(mMem,_List->number);
-			mMem =  writeL128(mMem,_List->Size_Reg);
-			DebugItem* _Item = _List->Item;
-			while(_Item != NULL){
-				mMem =  writeL128(mMem,_Item->param_name);
-				_Item = (DebugItem*)_Item->next;
+	size_t LoadToFile(size_t inLoad){
+		if(inLoad == 0)return 0;
+		DebugList* mList = debug;
+		while(mList != NULL){
+			if(mList->BS.Offset_Load == inLoad){
+				return mList->BS.Offset_File;
 			}
-			mMem =  writeL128(mMem,0);
-			_List = (DebugList*)_List->next;
+			mList = mList->next;
 		}
+		return inLoad;
 	}
 };
 

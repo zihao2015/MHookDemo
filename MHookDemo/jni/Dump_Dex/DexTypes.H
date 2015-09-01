@@ -166,7 +166,7 @@ public:
 		//判断是否存在 IDSString段，不存在就添加IDSString段
 		str_ModMem* modList =inMem->getByName("TypeList");
 		if(NULL == modList){
-			modList = inMem->newNameMem("TypeList",getCodeLen());
+			modList = inMem->newNameMem("TypeList",AlignAdd(getCodeLen(),0x04));
 			Parse("TypeList %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//获取List数据

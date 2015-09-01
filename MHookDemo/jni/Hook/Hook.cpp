@@ -3,12 +3,18 @@
 #include <sys/stat.h>
 #include "Substrate.h"
 #include "HFile/NativeLog.h"
+//#define _DEBUG_			1
+
 //dvm  Hook 段
 #define libdvm			"/system/lib/libdvm.so"
 #define dexFileParse	"_Z12dexFileParsePKhji"
 #define libc			"/system/lib/libc.so"
 #define fopen			"fopen"
 #define mmap			"mmap"
+#define ptrace			"ptrace"
+#define free			"free"
+#define munmap			"munmap"
+
 //调用外部Dump_DexFile
 extern void Dump_DexFile(void* inAddr,size_t inLen,void* inDex);
 //
@@ -17,9 +23,10 @@ void* My_dexFileParse(int *inAddr, unsigned int length, int parseFlags){
 	void* Out_DexFile = _dexFileParse(inAddr,length,parseFlags);
 	LOGD("LibCall dexFileParse:inDex:0x%08X,length:0x%08X,DexFile:0x%08X",inAddr,length,Out_DexFile);
 	//屏蔽长度过小的长度
-	if(length > 0x2A00){
+/*	if(length > 0x2A00){
 		Dump_DexFile(inAddr,length,Out_DexFile);
-	}
+	}/**/
+	Dump_DexFile(inAddr,length,Out_DexFile);
 	return Out_DexFile;
 }
 //fopen
@@ -36,7 +43,26 @@ void* My_mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset)
 	LOGD("LibCall _mmap Result %08x ",Result);
 	return Result;
 }
-
+//ptrace
+int (*_ptrace)(int request, int pid, int addr, int data);
+int My_ptrace(int request, int pid, int addr, int data){
+	int mres = _ptrace(request,pid,addr,data);
+	LOGD("LibCall _ptrace in %08x %08x %08x %08x %08x %08x",request,pid,addr,data);
+	LOGD("LibCall _ptrace res %08x ",mres);
+	return mres;
+}
+//free
+void (*_free)(void *ptr);
+void My_free(void *ptr){
+	LOGD("LibCall _free %08x",ptr);
+	_free(ptr);
+}
+// int munmap(void *start,size_t length);
+int (*_munmap)(void *start,size_t length);
+int My_munmap(void *start,size_t length){
+	LOGD("LibCall _munmap %08x %08x",start,length);
+	return _munmap(start,length);
+}
 /**
  *			Hook_Main
  *align_Len
@@ -56,13 +82,28 @@ int Hook_Main(){
 		}
 	}
 	// Hook fopen，
+#ifdef 	_DEBUG_
 	image = MSGetImageByName(libc);
-		if(image != NULL){
-			mFun = MSFindSymbol(image,fopen);
-			if(mFun != NULL){
-				MSHookFunction(mFun,(void*)&My_fopen,(void**)&_fopen);
-			}
+	if(image != NULL){
+		mFun = MSFindSymbol(image,fopen);
+		if(mFun != NULL){
+			MSHookFunction(mFun,(void*)&My_fopen,(void**)&_fopen);
 		}
+		mFun = MSFindSymbol(image,ptrace);
+		if(mFun != NULL){
+			MSHookFunction(mFun,(void*)&My_ptrace,(void**)&_ptrace);
+		}
+		mFun = MSFindSymbol(image,free);
+		if(mFun != NULL){
+		//	MSHookFunction(mFun,(void*)&My_free,(void**)&_free);
+		}
+		mFun = MSFindSymbol(image,munmap);
+		if(mFun != NULL){
+			MSHookFunction(mFun,(void*)&My_munmap,(void**)&_munmap);
+		}
+
+	}
+#endif
 	return 0;
 }
 

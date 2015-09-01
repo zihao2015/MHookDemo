@@ -87,7 +87,7 @@ public:
 			debug->DatatoFile(mem,maps);
 		}
 	//Code
-		code->DatatoFile(mem,maps);
+		code->DatatoFile(mem,maps,debug);
 		classCode->DatatoFile(mem,maps,code);
 		string->DatatoFile(mem,maps);
 		classdef->DatatoFile(mem,types,annot,encoded,classCode);

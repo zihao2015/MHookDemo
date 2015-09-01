@@ -120,7 +120,7 @@ public:
 		}
 		str_ModMem* modList =inMem->getByName("EncodedArray");
 		if(NULL == modList){
-			modList = inMem->newNameMem("EncodedArray",GetSize(CodeList));
+			modList = inMem->newNameMem("EncodedArray",AlignAdd(GetSize(CodeList),0x04));
 			Parse("EncodedArray %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS

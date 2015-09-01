@@ -22,19 +22,26 @@ typedef struct Annot_Element{
 	u4		ValueLen;
 
 }Annot_Element;
+//annotation element list
+typedef struct Annot_List{
+	struct Annot_List* next;
+	Base	BS;
+	u4		Ann_Ele;
+	u4		Ele_Type;
+	u4		Ele_Size;
+	u4		Ele_Value;
+	u4		EleValue_Len;
+	Annot_Element*  Item;
+};
 //Annotation
 typedef struct Annot{
 	struct Annot* next;
 	Base	BS;
 	Annot_Element* Element;
-
 	u4		Visibility;
 	u4		Type;
 	u4 		Count;
-	u4		EleValue;
-	u4		Ele_Type;
-	size_t	Ele_Size;
-
+	Annot_List*	List;
 }Annot;
 //Annot_Set			kDexTypeAnnotationSetItem
 typedef struct Annot_Set_Item{
@@ -56,6 +63,7 @@ typedef struct Annot_SRL{
 	struct Annot_SRL* next;
 	Base	BS;
 	u4		Size;
+	Annot_SRL_Item* iTem;
 	u4		Offset_AnnotSet;
 }Annot_SRL;
 //AnnotDir			kDexTypeAnnotationsDirectoryItem
@@ -114,6 +122,7 @@ public:
 				mEleItem->Value += *mAddr&0xFF;
 				mAddr+=mEleItem->ValueLen;
 			}
+			Parse("%08x：%08x",mEleItem->Type,mEleItem->Value);
 			mEleItem->BS.MemSize = SubAddr3(mAddr,inDex->pHeader,mEleItem->BS.Offset_Load);
 			Ele = (Annot_Element*)AddToLast(Ele,mEleItem);
 		}
@@ -136,21 +145,44 @@ public:
 		for(int m_i = 0;m_i < _mapsItem->size;m_i++){
 			Annot* mAnnot = (Annot*)Alloc(sizeof(Annot));
 			//设置偏移加载地址
-			mAnnot->BS.Offset_Load =  SubAddr2(mAnnotAddr,inDex->pHeader);
-			//获取visibility、type,count
+			mAnnot->BS.SetBaseLoad((u4)inDex->pHeader);
+			mAnnot->BS.SetLoadOffset(SubAddr2(mAnnotAddr,inDex->pHeader));
+			//获取visibility、type、count
 			mAnnotAddr = readLeb128(mAnnotAddr,&mAnnot->Visibility);
 			mAnnotAddr = readLeb128(mAnnotAddr,&mAnnot->Type);
 			mAnnotAddr = readLeb128(mAnnotAddr,&mAnnot->Count);
-			mAnnotAddr = readLeb128(mAnnotAddr,&mAnnot->EleValue);
-			u4	mType = 0 ;
-			mAnnotAddr = readLeb128(mAnnotAddr,&mType);
-			if(kDexAnnotationArray == mType){
-				mAnnot->Ele_Type = mType;
-				mAnnotAddr = readLeb128(mAnnotAddr,&mAnnot->Ele_Size);
-				mAnnot->Element = DexAnnot_Element(inDex,mAnnotAddr,mAnnot->Ele_Size);
-				mAnnotAddr += GetSize(mAnnot->Element);
-			}else{
-				Parse("DexAnnot 未出现Array");
+			Parse("DexAnnot %08x：%08x %08x %08x",m_i,mAnnot->Visibility,mAnnot->Type,mAnnot->Count);
+			for(int m_j = 0;m_j < mAnnot->Count;m_j++){
+				Annot_List* mList =(Annot_List*)Alloc(sizeof(Annot_List));
+				u4	mType = 0 ;
+				u4	mStartType =(u4)mAnnotAddr;
+				//首先判断是否为Array
+				mAnnotAddr = readLeb128(mAnnotAddr,&mList->Ann_Ele);
+				mAnnotAddr = readLeb128(mAnnotAddr,&mList->Ele_Type);
+				if(kDexAnnotationArray == mList->Ele_Type){				//Array
+					Annot_Element* mEle = NULL;
+					mList->Ele_Type = mType;
+					mAnnotAddr = readLeb128(mAnnotAddr,&mList->Ele_Size);
+					Parse("DexAnnot 出现Array %08x",mList->Ele_Size);
+					mList->Item  = DexAnnot_Element(inDex,mAnnotAddr,mList->Ele_Size);
+					mAnnotAddr += GetSize(mList->Item);
+				}else{
+					//NoArray
+					Parse("DexAnnot 未出现Array %08x",mList->Ele_Type);
+					mList->EleValue_Len = getValueLen(mList->Ele_Type);
+					switch(mList->EleValue_Len){
+					case 4:
+						mList->Ele_Value += *(mAnnotAddr+3)<<24;
+					case 3:
+						mList->Ele_Value += *(mAnnotAddr+2)<<16;
+					case 2:
+						mList->Ele_Value += *(mAnnotAddr+1)<<8;
+					case 1:
+						mList->Ele_Value += *mAnnotAddr & 0xFF;
+						mAnnotAddr+=mList->EleValue_Len;
+					}
+				}
+				mAnnot->List = (Annot_List*)AddToLast(mAnnot->List,mList);
 			}
 			mAnnot->BS.MemSize = SubAddr3(mAnnotAddr,mAnnot->BS.Offset_Load,inDex->pHeader);
 			annot = (Annot*)AddToLast(annot,mAnnot);
@@ -207,7 +239,8 @@ public:
 			return ;
 		}
 		//设置起始地址
-		u4* mAnnoSRL =(u4*)SubAddr2(inDex->pHeader,_mapsItem->offset);
+		u4* mAnnoSRL =(u4*)AddAddr2(inDex->pHeader,_mapsItem->offset);
+		Parse("[+]Dex_Ann_SRL Size %08x",_mapsItem->size);
 		//遍历mAnSRL
 		for(int m_i = 0;m_i < _mapsItem->size;m_i++){
 			Annot_SRL* mAnSRL = (Annot_SRL*)Alloc(sizeof(Annot_SRL));
@@ -218,7 +251,7 @@ public:
 			for(int m_j = 0;m_j< mAnSRL->Size;m_j++){
 				Annot_SRL_Item* mItem = (Annot_SRL_Item*)Alloc(sizeof(Annot_SRL_Item));
 				mItem->Offset  =*mAnnoSRL;mAnnoSRL++;
-				mItem->next = (Annot_SRL_Item*)AddToLast(mItem->next,mItem);
+				mAnSRL->iTem = (Annot_SRL_Item*)AddToLast(mAnSRL->iTem,mItem);
 			}
 			mAnSRL->BS.MemSize = SubAddr3(mAnnoSRL,inDex->pHeader,mAnSRL->BS.Offset_Load);
 			anSRL = (Annot_SRL*)AddToLast(anSRL,mAnSRL);
@@ -326,7 +359,7 @@ public:
 		Parse("AnnotToData");
 		str_ModMem* modList = inMem->getByName("AnnotItem");
 		if(NULL == modList){
-			modList = inMem->newNameMem( "AnnotItem",GetSize(annot));
+			modList = inMem->newNameMem( "AnnotItem",AlignAdd(GetSize(annot),0x04));
 			Parse("Annot_Item %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS
@@ -337,20 +370,14 @@ public:
 		//设置Annot
 		while(NULL != m_Annot){
 			//设置偏移
-			u1* next_Addr = (u1*)annot_Addr;
 			m_Annot->BS.Offset_File = AddAddr2(modList->Offset,SubAddr2(annot_Addr,modList->Addr));
+			memcpy(annot_Addr,(u1*)m_Annot->BS.GetLoad(),m_Annot->BS.MemSize);
+			annot_Addr +=m_Annot->BS.MemSize;
+			/*
 			annot_Addr = writeL128(annot_Addr,m_Annot->Visibility);
 			annot_Addr = writeL128(annot_Addr,m_Annot->Type);
 			annot_Addr = writeL128(annot_Addr,m_Annot->Count);
-			annot_Addr = writeL128(annot_Addr,m_Annot->EleValue);
-			if(kDexAnnotationArray == m_Annot->Ele_Type){
-				annot_Addr = writeL128(annot_Addr,m_Annot->Ele_Type);
-				annot_Addr = writeL128(annot_Addr,m_Annot->Ele_Size);
-				annot_Addr = (u1*)AnnotElementToData(annot_Addr,m_Annot->Element);
-			}else{
-				Parse("AnnotToData 输出数据并非Array");
-			}
-//			annot_Addr = m_Annot->BS.MemSize + next_Addr;
+			Annot_List* mList = m_Annot->List;/**/
 			m_Annot = m_Annot->next;
 		}
 	}
@@ -368,11 +395,24 @@ public:
 		//获取AnnotSRL模块内存，没有就新建
 		str_ModMem* modList =inMem->getByName("AnnotSRL");
 		if(NULL == modList){
-			modList = inMem->newNameMem("AnnotSRL",GetSize(anSRL));
+			modList = inMem->newNameMem("AnnotSRL",AlignAdd(GetSize(anSRL),0x04));
 			Parse("AnnotSRL %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS
 		inmaps->getTypeOffset(kDexTypeAnnotationSetRefList)->offset = modList->Offset;
+		//
+		Annot_SRL* mAnSRL = anSRL;
+		u4* mMemStart = (u4*)modList->Addr;
+		while(NULL != mAnSRL){
+			mAnSRL->BS.Offset_File =(u4)mMemStart;
+			*mMemStart =mAnSRL->Size;mMemStart++;
+			Annot_SRL_Item* mItem = mAnSRL->iTem;
+			while(NULL != mItem){
+				*mMemStart =LoadToFile(mItem->Offset);mMemStart++;
+				mItem = mItem->next;
+			}
+			mAnSRL = mAnSRL->next;
+		}
 	}
 /*
 ************************************************************
@@ -389,7 +429,7 @@ public:
 		Parse("AnnotSetToData");
 		str_ModMem* modList =inMem->getByName("AnnotSet");
 		if(NULL == modList){
-			modList = inMem->newNameMem("AnnotSet",GetSize(anSet));
+			modList = inMem->newNameMem("AnnotSet",AlignAdd(GetSize(anSet),0x04));
 			Parse("Annot Set %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS
@@ -424,7 +464,7 @@ public:
 		Parse("AnnotDirToData");
 		str_ModMem* modList =inMem->getByName("Annot_Dir");
 		if(NULL == modList){
-			modList = inMem->newNameMem("Annot_Dir",GetSize(anDir));
+			modList = inMem->newNameMem("Annot_Dir",AlignAdd(GetSize(anDir),0x04));
 			Parse("Annot Dir %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS

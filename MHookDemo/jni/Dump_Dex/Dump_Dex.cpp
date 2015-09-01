@@ -6,6 +6,7 @@
 #include "Dump_Dex.H"
 #include "Module_Mem.H"
 #include "DexParse.H"
+#include "Dex_Base64.H"
 //
 extern char* AppName;
 //__________________________________________________________
@@ -40,7 +41,8 @@ void* Dex_Parse(void* in){
 	struct timeval tv;
 	gettimeofday(&tv,NULL);
 	int m_HookS = tv.tv_sec%60;
-	int m_HookM = (tv.tv_sec/60)%24;
+	int m_HookM = (tv.tv_sec/60)%60;
+	int m_HookH = (tv.tv_sec/3600)%24;
 	char* saveName = (char*)malloc(1024);
 	memset(saveName,0,1024);
 	LOGD("inDex:0x%08X,length:0x%08X,DexFile:0x%08X",Info->addr,Info->len,Info->Dex);
@@ -49,19 +51,18 @@ void* Dex_Parse(void* in){
 	DumpD("@下载Demo1!");
 	Mod_Mem *mem = new Mod_Mem();
 	str_ModMem* mMem = mem->newNameMem("Demo1",Info->len);
-	memcpy(mMem->Addr,(void*)Info->Dex->pHeader,Info->Dex->pHeader->fileSize);
-
+	memcpy(mMem->Addr,(void*)Info->Dex->pHeader,Info->len);
 	sprintf(saveName,"Demo1_%02d_%02d.dex",m_HookM,m_HookS);
 	mem->SaveFile(AppName,saveName);
 	DumpD("延时15S!");
 	sleep(10);
 	DumpD("下载Demo2!");
 	//版本2.Dump
-	mem = new Mod_Mem();
-	mMem = mem->newNameMem("Demo2",Info->len);
-	memcpy(mMem->Addr,(void*)Info->Dex->pHeader,Info->Dex->pHeader->fileSize);
+	//mMem = mem->newNameMem("Demo2",Info->len);
+	memcpy(mMem->Addr,(void*)Info->Dex->pHeader,Info->len);
 	sprintf(saveName,"Demo2_%02d_%02d.dex",m_HookM,m_HookS);
 	mem->SaveFile(AppName,saveName);
+//	return NULL;
 	DumpD("下载Demo3 ing!");
 	//版本3.只修复ClassDef
 	DexParse* parse = new DexParse(Info->addr,Info->Dex);
