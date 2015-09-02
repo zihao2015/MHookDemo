@@ -34,15 +34,12 @@ public:
 ************************************************************
 */
 	static void Log(void* inAddr){
-		Parse("Dex_Maps Log Addr:%08x",inAddr);
+		DEXLOG("Dex_Maps Log Addr:%08x",inAddr);
 		u4	mSize = *(u4*)inAddr;
 		DexMapId* MapsIds = (DexMapId*)((u1*)inAddr+4);
-		Parse("Maps Size :%08x",mSize);
+		DEXLOG("Maps Size :%08x",mSize);
 		for(int m_i = 0;m_i < mSize;m_i++){
-			Parse("Type :%08x",MapsIds->type);
-			Parse("Unused :%08x",MapsIds->unused);
-			Parse("Size :%08x",MapsIds->size);
-			Parse("Offset :%08x",MapsIds->offset);
+			DEXLOG("Item :%04x %08x %08x",MapsIds->type,MapsIds->size,MapsIds->offset);
 			MapsIds++;
 		}
 	}
@@ -63,7 +60,7 @@ public:
 ************************************************************
 */
 	Dex_Maps(DexFile* inDex){
-		Parse("Dex_Maps");
+		DEXLOG("[Parse]Dex_Maps");
 		//获取起始地址和初始化Map结构
 		u1*	mapStart =(u1*)AddAddr2(inDex->pHeader,inDex->pHeader->mapOff);
 		Map = (maplist*)Alloc(sizeof(maplist));
@@ -122,12 +119,12 @@ public:
 */
 	void IDStoFile(Mod_Mem* inMem,	Dex_Header* inheader){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		Parse("Dex_Maps IDStoFile");
+		DEXLOG("Dex_Maps IDStoFile");
 		str_ModMem* modIds =inMem->getByName("MapsIDS");
 
 		if(modIds == NULL){
 			modIds = inMem->newNameMem("MapsIDS",Map->mapSize*0xC+4);
-			Parse("Dex_Maps DatatoFile %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			DEXLOG("Dex_Maps DatatoFile %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//设置头系统文件中的数据
 		getTypeItem(kDexTypeMapList)->offset = modIds->Offset;

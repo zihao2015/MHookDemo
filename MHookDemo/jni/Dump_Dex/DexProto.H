@@ -25,33 +25,29 @@ public:
 *后续将加载数据替换成文件偏移数据就OK了
 ************************************************************
 */
-	Dex_Proto(DexFile* inDex){
-		Parse("Dex_Proto");
+	Dex_Proto(DexFile* inDex,Dex_Maps* inmaps){
+		//获取基本数据
+		DexHeader*  pHeader = (DexHeader*)inDex->pHeader;
+		mapsItem* _mapsItem =inmaps->getTypeItem(kDexTypeProtoIdItem);
+		DEXLOG("[Parse]Dex_Proto %08x %08x",pHeader->protoIdsOff,pHeader->protoIdsSize);
 		//在文件中按结构体很好的保存，设置起始按结构体读取
-		DexProtoId* protoItem =(DexProtoId*)((u1*)inDex->pHeader + inDex->pHeader->protoIdsOff);
-		for(int m_i = 0;m_i < inDex->pHeader->protoIdsSize;m_i++){
+		DexProtoId* protoItem =(DexProtoId*)AddAddr2(pHeader,pHeader->protoIdsOff);
+		//遍历ProtoItem
+		ProtoItem* _Idsitem = NULL;
+		for(int m_i = 0;m_i < pHeader->protoIdsSize;m_i++){
 			ProtoItem* _item =(ProtoItem*)Alloc(sizeof(ProtoItem));
 			_item->shortyIdx = protoItem->shortyIdx;
 			_item->returnTypeIdx = protoItem->returnTypeIdx;
 			_item->parametersOff = protoItem->parametersOff;
 			protoItem++;/**/
-			Idsitem =  (ProtoItem*)AddToLast(Idsitem,_item);
+			//将_item添加到列表中，AddToLast非常耗时
+			if(_Idsitem == NULL){
+				Idsitem = (ProtoItem*)AddToLast(Idsitem,_item);
+				_Idsitem = (ProtoItem*)GetLastLink(Idsitem);
+			}else{
+				_Idsitem = (ProtoItem*)AddLink(_Idsitem,_item);
+			}
 		}
-	}
-/*
-************************************************************
-*				getIdsCount
-*获取Ids个数，然而空间为getIdsCount()*12
-************************************************************
-*/
-	size_t getIdsCount(){
-		ProtoItem* _item = Idsitem;
-		size_t mNo = 0;
-		while(_item != NULL){
-			_item = _item->next;
-			mNo++;
-		}
-		return mNo;
 	}
 /*
 ************************************************************
@@ -61,17 +57,17 @@ public:
 */
 	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		Parse("Dex_Proto IDStoFile");
+		DEXLOG("Dex_Proto IDStoFile");
 		str_ModMem* modIds =inMem->getByName("ProtoIDS");
 		if(modIds== NULL){
-			modIds = inMem->newNameMem("ProtoIDS",getIdsCount()*12);
-			Parse("Proto Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			modIds = inMem->newNameMem("ProtoIDS",GetCount(Idsitem)*12);
+			DEXLOG("Proto Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//修改maps偏移地址
 		inmaps->getTypeItem(kDexTypeProtoIdItem)->offset = modIds->Offset;
-		inmaps->getTypeItem(kDexTypeProtoIdItem)->size = getIdsCount();
+		inmaps->getTypeItem(kDexTypeProtoIdItem)->size = GetCount(Idsitem);
 		inheader->Header->protoIdsOff = modIds->Offset;
-		inheader->Header->protoIdsSize = getIdsCount();
+		inheader->Header->protoIdsSize = GetCount(Idsitem);
 	}
 /*
 ************************************************************
@@ -80,43 +76,25 @@ public:
 ************************************************************
 */
 	void DatatoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps,Dex_Types* inType){
-			//判断是否存在 IDSString段，不存在就添加IDSString段
-			Parse("Dex_Proto IDStoFile");
-			str_ModMem* modIds =inMem->getByName("ProtoIDS");
-			if(modIds== NULL){
-				modIds = inMem->newNameMem("ProtoIDS",getIdsCount()*12);
-				Parse("Proto Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
-			}
-			//修改maps偏移地址
-			inmaps->getTypeItem(kDexTypeProtoIdItem)->offset = modIds->Offset;
-			inmaps->getTypeItem(kDexTypeProtoIdItem)->size = getIdsCount();
-			inheader->Header->protoIdsOff = modIds->Offset;
-			inheader->Header->protoIdsSize = getIdsCount();
-			//设置Proto IDS数据
-			ProtoItem* mitem = Idsitem;
-			DexProtoId* mID = (DexProtoId*)modIds->Addr;
-			while(mitem != NULL){
-				mID->shortyIdx = mitem->shortyIdx;
-				mID->returnTypeIdx = mitem->returnTypeIdx;
-				mID->parametersOff = inType->LoadToFile(mitem->parametersOff);
-				mitem = mitem->next;
-				mID++;
-			}
+		//判断是否存在 IDSString段，不存在就添加IDSString段
+		DEXLOG("Dex_Proto IDStoFile");
+		str_ModMem* modIds =inMem->getByName("ProtoIDS");
+		if(modIds== NULL){
+			modIds = inMem->newNameMem("ProtoIDS",GetCount(Idsitem)*12);
+			DEXLOG("Proto Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
-/*
-************************************************************
-*				SetMemory
-*老函数，新版本不会使用
-************************************************************
-*/
-	void SetMemory(str_ModMem* inMem,Dex_Types* types){
+		//修改maps偏移地址
+		inmaps->getTypeItem(kDexTypeProtoIdItem)->offset = modIds->Offset;
+		inmaps->getTypeItem(kDexTypeProtoIdItem)->size = GetCount(Idsitem);
+		inheader->Header->protoIdsOff = modIds->Offset;
+		inheader->Header->protoIdsSize =GetCount(Idsitem);
+		//设置Proto IDS数据
 		ProtoItem* mitem = Idsitem;
-		DexProtoId* mID = (DexProtoId*)inMem->Addr;
-		Parse("[+]Proto offset:0x%08x",inMem->Offset);
+		DexProtoId* mID = (DexProtoId*)modIds->Addr;
 		while(mitem != NULL){
 			mID->shortyIdx = mitem->shortyIdx;
 			mID->returnTypeIdx = mitem->returnTypeIdx;
-			mID->parametersOff = types->LoadToFile(mitem->parametersOff);
+			mID->parametersOff = inType->LoadToFile(mitem->parametersOff);
 			mitem = mitem->next;
 			mID++;
 		}

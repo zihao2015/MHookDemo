@@ -9,6 +9,7 @@
 //字符串保存列表
 typedef struct stringItem{
 	struct stringItem* next;
+	Base	BS;
 	//
 	char* 	str;
 	u4		L128Len;
@@ -32,7 +33,7 @@ public:
 			mSzie += mitem->size;
 			mitem = mitem->next;
 		}
-		Parse("Dex_String@getCodeLen:0x%08x",mSzie);
+		DEXLOG("Dex_String@getCodeLen:0x%08x",mSzie);
 		return mSzie;
 	}
 /*
@@ -43,15 +44,19 @@ public:
 *由于StringIDS不存在分开存放，所以一次解析完，而且不需要保存偏移表加载地址、
 *存放时会只需要将数据关联即可
 *注意:Code长度可能不是Code说明长度，我们分析String 到\0结束
+*Header里面数据不是十分可信，所以使用Maps里面数据
 ************************************************************
 */
-	Dex_String(DexFile* inDex){
-		Parse("Dex_String");
-		stringItem* strItem = NULL;
+	Dex_String(DexFile* inDex,Dex_Maps* inmaps){
+		//获取基本数据
+		DexHeader*  pHeader = (DexHeader*)inDex->pHeader;
+		mapsItem* _mapsItem =inmaps->getTypeItem(kDexTypeStringIdItem);
+		DEXLOG("[Parse]Dex_String %08x %08x",pHeader->stringIdsOff,pHeader->stringIdsSize);
 		//获取IDS实际内存地址
-		u4* mMemIds =(u4*)AddAddr2(inDex->pHeader,inDex->pHeader->stringIdsOff);
+		u4* mMemIds =(u4*)AddAddr2(pHeader,pHeader->stringIdsOff);
 		//遍历字符串
-		for(int m_i = 0;m_i < inDex->pHeader->stringIdsSize;m_i++){			stringItem* _item =(stringItem*)Alloc(sizeof(stringItem));
+		stringItem* strItem = NULL;
+		for(int m_i = 0;m_i < pHeader->stringIdsSize;m_i++){			stringItem* _item =(stringItem*)Alloc(sizeof(stringItem));
 			//获取字符串Code 起始地址
 			u1* mMemCode =(u1*)AddAddr2(inDex->pHeader,*mMemIds);
 			_item->L128Code= readLeb128(mMemCode);
@@ -67,30 +72,15 @@ public:
 			_item->size = _item->strLen + _item->L128Len + 1;
 			//将字符串添加到列表中，AddToLast非常耗时
 			if(strItem == NULL){
-				Idsitem = (typeList*)AddToLast(Idsitem,_item);
-				strItem = (typeList*)GetLastLink(Idsitem);
+				Idsitem = (stringItem*)AddToLast(Idsitem,_item);
+				strItem = (stringItem*)GetLastLink(Idsitem);
 			}else{
-				strItem = (typeList*)AddLink(strItem,_item);
+				strItem = (stringItem*)AddLink(strItem,_item);
 			}
 			//指向下一个字符串
 			mMemIds++;
 		}
-	}
-/*
-************************************************************
-*				getIdsCount
-*获取StringIds个数，
-*获取个数后4*getIdsCount()就是保存Ids需要的空间
-************************************************************
-*/
-	size_t getIdsCount(){
-		stringItem* mitem = Idsitem;
-		size_t mNo = 0;
-		while(mitem != NULL){
-			mitem = mitem->next;
-			mNo++;
-		}
-		return mNo;
+
 	}
 /*
 ************************************************************
@@ -101,17 +91,17 @@ public:
 ************************************************************
 */
 	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps){
-		Parse("Dex_String IDStoFile");
+		DEXLOG("Dex_String IDStoFile");
 		//判断是否存在 IDSString段，不存在就添加IDSString段
 		str_ModMem* modIds =inMem->getByName("StringIDS");
 		if(modIds== NULL){
-			modIds = inMem->newNameMem("StringIDS",getIdsCount()*4);
-			Parse("String Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			modIds = inMem->newNameMem("StringIDS",GetCount(Idsitem)*4);
+			DEXLOG("String Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//修改maps偏移地址
 		inmaps->getTypeItem(kDexTypeStringIdItem)->offset = modIds->Offset;
-		inmaps->getTypeItem(kDexTypeStringIdItem)->size = getIdsCount();
-		inheader->Header->stringIdsSize = getIdsCount();
+		inmaps->getTypeItem(kDexTypeStringIdItem)->size = GetCount(Idsitem);
+		inheader->Header->stringIdsSize = GetCount(Idsitem);
 	}
 /*
 ************************************************************
@@ -121,12 +111,12 @@ public:
 ************************************************************
 */
 	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps){
-		Parse("Dex_String DatatoFile");
+		DEXLOG("Dex_String DatatoFile");
 		//判断是否存在 IDSString段，不存在就添加IDSString段
 		str_ModMem* modList = inMem->getByName("StringCode");
 		if(NULL == modList){
 			modList = inMem->newNameMem("StringCode",AlignAdd(getCodeLen(),0x100));
-			Parse("Dex_String DatatoFile %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
+			DEXLOG("Dex_String DatatoFile %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//获取需要关联的两个str_ModMem段(StringIDS和StringCode)
 		str_ModMem* memIds = inMem->getByName("StringIDS");

@@ -56,8 +56,8 @@ public:
 ************************************************************
 */
 	void DumpToFile(char* appName,char* inFile){
+		DEXLOG("DumpToFile");
 		mem = new Mod_Mem();
-		Parse("[+]IDS DexParse");
 		//header、string_ids、types_ids、
 		header->IDStoFile(mem);
 		string->IDStoFile(mem,header,maps);
@@ -92,10 +92,9 @@ public:
 		classdef->DatatoFile(mem,types,annot,encoded,classCode);
 	//根据DUMP数据正在修改MAPS和Header
 		maps->IDStoFile(mem,header);
-		Parse("[+]header");
 		header->IDStoFile(mem);
 	//Save To File
-		Parse("[+]Save");
+		DEXLOG("[File]Save");
 		mem->SaveFile(appName,inFile);
 	}
 /*
@@ -110,18 +109,19 @@ public:
 ************************************************************
 */
  	DexParse(void* inAddr,DexFile* inDex){
+ 		DEXLOG("DexParse");
  		// 初始化dex
 		dex = inDex;
 		//Header、maps
 		header = new Dex_Header(inDex);
 		maps = new Dex_Maps(inDex);
 		//string、types、proto、fileds、methods、Class_Def
-		string = new Dex_String(inDex);
+		string = new Dex_String(inDex,maps);
 		types = new Dex_Types(inDex,maps);
-		proto = new Dex_Proto(inDex);
-		fileds = new Dex_Fileds(inDex);
-		methods = new Dex_Methods(inDex);
-		classdef = new Dex_ClassDef(inDex);
+		proto = new Dex_Proto(inDex,maps);
+		fileds = new Dex_Fileds(inDex,maps);
+		methods = new Dex_Methods(inDex,maps);
+		classdef = new Dex_ClassDef(inDex,maps);
 		//将Annot分开处理、使用Annot类进行解析
 		//Annot中包含kDexTypeAnnotationSetRefList、kDexTypeAnnotationSetItem、kDexTypeAnnotationItem、kDexTypeAnnotationsDirectoryItem
 		annot = new Dex_Annot(inDex,maps);
@@ -136,7 +136,7 @@ public:
 		//解析ClassData  然后根据内容解析Dex_Code
 		code = new Dex_Code(inDex);
 		classCode = new Dex_ClassCode(inDex,maps,code);
-		Parse("Parse Over");
+		DEXLOG("[Parse] Over");
 	}
 };
 

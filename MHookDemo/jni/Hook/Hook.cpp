@@ -107,11 +107,11 @@ int Hook_Main(){
 		}
 		mFun = MSFindSymbol(image,dvmDexFileOpenFromFd);
 		if(mFun != NULL){
-			MSHookFunction(mFun,(void*)&My_dvmDexFileOpenFromFd,(void**)&_dvmDexFileOpenFromFd);
+//			MSHookFunction(mFun,(void*)&My_dvmDexFileOpenFromFd,(void**)&_dvmDexFileOpenFromFd);
 		}
 		mFun = MSFindSymbol(image,dvmDexFileOpenPartial);
 		if(mFun != NULL){
-			MSHookFunction(mFun,(void*)&My_dvmDexFileOpenPartial,(void**)&_dvmDexFileOpenPartial);
+//			MSHookFunction(mFun,(void*)&My_dvmDexFileOpenPartial,(void**)&_dvmDexFileOpenPartial);
 		}
 	}
 	// Hook fopen，

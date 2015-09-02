@@ -42,7 +42,7 @@ public:
 ************************************************************
 */
 	Dex_ClassCode(DexFile* inDex,Dex_Maps* inmaps,Dex_Code* code){
-		Parse("Dex_ClassCode");
+		DEXLOG("[Parse]Dex_ClassCode");
 		//MethodNum为添加，Code个数
 		mapsItem* inMapClassCode =inmaps->getTypeItem(kDexTypeClassDataItem);
 		int MethodNum = 0;
@@ -50,7 +50,7 @@ public:
 		u1* mCodeAddr =(u1*)((u4)inDex->pHeader + inMapClassCode->offset);
 		//遍历全部的DexClassData
 		for(int m_i =0;m_i < inMapClassCode->size;m_i++){
-			Parse("Dex_ClassCode %d",m_i);
+//			Parse("Dex_ClassCode %d",m_i);
 			DexClassData* mList = (DexClassData*)Alloc(sizeof(DexClassData));
 			//获取加载偏移
 			mList->BS.Offset_Load = (u4)mCodeAddr -(u4)inDex->pHeader;
@@ -80,7 +80,7 @@ public:
 			mList->BS.MemSize = (u4)mCodeAddr - mList->BS.Offset_Load - (u4)inDex->pHeader;
 			ClassD = (DexClassData*)AddToLast(ClassD,mList);
 		}
-		Parse("[+]Dex_ClassCode MethodNum:%d",MethodNum);
+		DEXLOG("[Parse]Dex_ClassCode MethodNum:%d",MethodNum);
 	}
 /*
 ************************************************************
@@ -90,15 +90,15 @@ public:
 */
 	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps,Dex_Code* code){
 		if(NULL == ClassD){
-			Parse("没有存在ClassD数据,直接退出!");
+			DEXLOG("没有存在ClassD数据,直接退出!");
 			return ;
 		}
 		//获取debug模块内存，没有就新建
-		Parse("ClassD DatatoFile");
+		DEXLOG("ClassD DatatoFile");
 		str_ModMem* modList =inMem->getByName("ClassData");
 		if(NULL == modList){
 			modList = inMem->newNameMem("Code",AlignAdd(GetSize(ClassD),0x100));
-			Parse("ClassD %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
+			DEXLOG("ClassD %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//
 		inmaps->setTypeOffset(kDexTypeClassDataItem,modList->Offset);
@@ -141,7 +141,7 @@ public:
 ************************************************************
 */
 	void SetMemory(str_ModMem* inMem,Dex_Code* code){
-		Parse("[+]ClassCode SetMemory Offset:0x%08x",inMem->Offset);
+		DEXLOG("[+]ClassCode SetMemory Offset:0x%08x",inMem->Offset);
 		DexClassData* mList = ClassD;
 		u1* mAddr = inMem->Addr;
 		while(mList != NULL){
@@ -179,12 +179,12 @@ public:
 		DexClassData* mList = ClassD;
 		while(mList != NULL){
 			if(mList->BS.Offset_Load == inLoad){
-				Parse("Dex_ClassDef %08x %08x",inLoad,mList->BS.Offset_File);
+				DEXLOG("Dex_ClassDef %08x %08x",inLoad,mList->BS.Offset_File);
 				return mList->BS.Offset_File;
 			}
 			mList = mList->next;
 		}
-		 Parse("Dex_ClassDef LoadToFile %08x",inLoad);
+		DEXLOG("Dex_ClassDef LoadToFile %08x",inLoad);
 		return inLoad;
 	}
 /*

@@ -28,29 +28,20 @@ public:
 	ClassDefItem* Idsitem = NULL;
 /*
 ************************************************************
-*				getIdsCount
-*获取Ids个数，然而空间为getIdsCount()*20
-************************************************************
-*/
-	size_t getIdsCount(){
-		ClassDefItem* mitem = Idsitem;
-		size_t mNo = 0;
-		while(mitem != NULL){
-			mitem = mitem->next;
-			mNo++;
-		}
-		return mNo;
-	}
-/*
-************************************************************
 *				Dex_ClassDef
 *解析Class Define
 ************************************************************
 */
-	Dex_ClassDef(DexFile* inDex){
-		Parse("Dex_ClassDef");
-		DexClassDef* Item =(DexClassDef*)((u1*)inDex->pHeader + inDex->pHeader->classDefsOff);
-		for(int m_i = 0;m_i < inDex->pHeader->classDefsSize;m_i++){			ClassDefItem* _item =(ClassDefItem*)Alloc(sizeof(ClassDefItem));
+	Dex_ClassDef(DexFile* inDex,Dex_Maps* inmaps){
+		//获取基本数据
+		DexHeader*	pHeader = (DexHeader*)inDex->pHeader;
+		mapsItem*	_mapsItem =inmaps->getTypeItem(kDexTypeClassDefItem);
+		DEXLOG("[Parse]Dex_ClassDef %08x %08x",pHeader->classDefsOff,pHeader->classDefsSize);
+		//根据DexClassDef的文件结构，设置文件头DexClassDef
+		DexClassDef* Item =(DexClassDef*)AddAddr2(pHeader,pHeader->classDefsOff);
+		//遍历ClassDefItem
+		ClassDefItem* _Idsitem = NULL;
+		for(int m_i = 0;m_i < pHeader->classDefsSize;m_i++){			ClassDefItem* _item =(ClassDefItem*)Alloc(sizeof(ClassDefItem));
 			_item->classIdx = Item->classIdx;
 			_item->accessFlags = Item->accessFlags;
 			_item->superclassIdx = Item->superclassIdx;
@@ -59,8 +50,15 @@ public:
 			_item->annotationsOff = Item->annotationsOff;
 			_item->classDataOff = Item->classDataOff;
 			_item->staticValuesOff = Item->staticValuesOff;
+			//指向下一个ClassDefItem数据
 			Item++;
-			Idsitem =(ClassDefItem*) AddToLast(Idsitem,_item);
+			//将_item添加到列表中，AddToLast非常耗时
+			if(_Idsitem == NULL){
+				Idsitem = (ClassDefItem*)AddToLast(Idsitem,_item);
+				_Idsitem = (ClassDefItem*)GetLastLink(Idsitem);
+			}else{
+				_Idsitem = (ClassDefItem*)AddLink(_Idsitem,_item);
+			}
 		}
 	}
 /*
@@ -73,17 +71,17 @@ public:
 */
 	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		Parse("ClassDef IDStoFile");
+		DEXLOG("ClassDef IDStoFile");
 		str_ModMem* modIds =inMem->getByName("ClassDef");
 		if(modIds== NULL){
-			modIds = inMem->newNameMem("ClassDef",getIdsCount()*0x20);
-			Parse("ClassDefine %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			modIds = inMem->newNameMem("ClassDef",GetCount(Idsitem)*0x20);
+			DEXLOG("ClassDefine %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//修改maps偏移地址
 		inmaps->getTypeItem(kDexTypeClassDefItem)->offset = modIds->Offset;
-		inmaps->getTypeItem(kDexTypeClassDefItem)->size = getIdsCount();
+		inmaps->getTypeItem(kDexTypeClassDefItem)->size = GetCount(Idsitem);
 		inheader->Header->classDefsOff = modIds->Offset;
-		inheader->Header->classDefsSize = getIdsCount();
+		inheader->Header->classDefsSize = GetCount(Idsitem);
 		 return ;
 		//设置Fileds IDS数据
 		ClassDefItem* mitem = Idsitem;
@@ -92,11 +90,12 @@ public:
 			dexItem->classIdx = mitem->classIdx;
 			dexItem->accessFlags = mitem->accessFlags;
 			dexItem->superclassIdx = mitem->superclassIdx;
-	//		dexItem->interfacesOff= inParse->types->LoadToFile(mitem->interfacesOff);
 			dexItem->sourceFileIdx = mitem->sourceFileIdx;
+		//	全部需要偏移地址的都不赋值
+		//	dexItem->interfacesOff= inParse->types->LoadToFile(mitem->interfacesOff);
 		//	dexItem->annotationsOff = inParse->annot->LoadToFile(mitem->annotationsOff);
 		//	dexItem->classDataOff = inParse->classCode->LoadToFile(mitem->classDataOff);
-	//		dexItem->staticValuesOff = inParse->encoded->LoadToFile(mitem->staticValuesOff);
+		//	dexItem->staticValuesOff = inParse->encoded->LoadToFile(mitem->staticValuesOff);
 			dexItem++;
 			mitem = mitem->next;
 		}
@@ -112,9 +111,9 @@ public:
 		//
 		str_ModMem* modIds =inMem->getByName("ClassDef");
 		if(modIds== NULL){
-			Parse("DatatoFile 设置原先没有数据，这里申请数据可能会出错,也不自动修复Header和MAPS");
-			modIds = inMem->newNameMem("ClassDef",getIdsCount()*0x20);
-			Parse("ClassDef DatatoFile %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			DEXLOG("DatatoFile 设置原先没有数据，这里申请数据可能会出错,也不自动修复Header和MAPS");
+			modIds = inMem->newNameMem("ClassDef",GetCount(Idsitem)*0x20);
+			DEXLOG("ClassDef DatatoFile %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//设置Fileds IDS数据
 		ClassDefItem* mitem = Idsitem;
@@ -125,29 +124,6 @@ public:
 			dexItem->superclassIdx = mitem->superclassIdx;
 			dexItem->interfacesOff = types->LoadToFile(mitem->interfacesOff);
 
-			dexItem->sourceFileIdx = mitem->sourceFileIdx;
-			dexItem->annotationsOff = annot->LoadToFile(mitem->annotationsOff);
-			dexItem->classDataOff = classCode->LoadToFile(mitem->classDataOff);
-			dexItem->staticValuesOff = encoded->LoadToFile(mitem->staticValuesOff);
-			dexItem++;
-			mitem = mitem->next;
-		}
-	}
-/*
-************************************************************
-*				SetMemory
-*1.��ȡ�б���IDS����
-************************************************************
-*/
-	void SetMemory(str_ModMem* inMem,Dex_Types* types,Dex_Encoded* encoded,Dex_Annot* annot,Dex_ClassCode* classCode){
-		Parse("[+]ClassDef Offset:0x%08x",inMem->Offset);
-		ClassDefItem* mitem = Idsitem;
-		DexClassDef* dexItem =(DexClassDef*)(inMem->Addr);
-		while(mitem != NULL){
-			dexItem->classIdx = mitem->classIdx;
-			dexItem->accessFlags = mitem->accessFlags;
-			dexItem->superclassIdx = mitem->superclassIdx;
-			dexItem->interfacesOff= types->LoadToFile(mitem->interfacesOff);
 			dexItem->sourceFileIdx = mitem->sourceFileIdx;
 			dexItem->annotationsOff = annot->LoadToFile(mitem->annotationsOff);
 			dexItem->classDataOff = classCode->LoadToFile(mitem->classDataOff);

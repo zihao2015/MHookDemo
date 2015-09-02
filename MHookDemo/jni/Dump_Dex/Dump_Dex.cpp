@@ -25,13 +25,14 @@ extern char* AppName;
 void* Dex_Parse(void* in){
 	//获取传递参数，并打印数据
 	DumpInfo* Info = (DumpInfo*)in;
-	DumpD("延时10S!");
+	DEXLOG("延时10S!");
 	sleep(10);
-	DumpD("正在回写DexHeader数据，防止解析后加固修改 Header!");
-	memcpy(Info->addr,Info->BackOldDex,0x70);
-	DumpD("下载Demo2，下载延迟之后的DexFile!");
+	DEXLOG("正在回写DexHeader数据，防止解析后加固修改Header,为了防止错误基本和数据用MAPoff里面数据!");
+		//	memcpy(Info->addr,Info->BackOldDex,0x70);
+	DEXLOG("下载Demo2!");
 	DexUtil::SaveFile(Info->addr,Info->len,AppName,DexUtil::GetTimeName("Demo2"));
-	DumpD("下载Demo3，先解码DexFile然后合并!");
+	DEXLOG("下载Demo3，先解码DexFile然后合并!");
+			//	memcpy((void*)Info->Dex->pHeader,Info->BackOldDex,0x70);
 	DexParse* parse = new DexParse(Info->addr,Info->Dex);
 	parse->DumpToFile(AppName,DexUtil::GetTimeName("Demo3"));
 	return NULL;
@@ -44,26 +45,26 @@ void* Dex_Parse(void* in){
 ************************************************************
 */
 void Dump_DexFile(void* inAddr,size_t inLen,void* inDex){
-	LOGD("inDex:0x%08X,length:0x%08X,DexFile:0x%08X",inAddr,inLen,inDex);
+	DEXLOG("inDex:0x%08X,length:0x%08X,DexFile:0x%08X",inAddr,inLen,inDex);
 	if(!DexUtil::isDex(inAddr)){
-		DumpD("输入格式出现错误，无法识别DEX或DEY,程序自动退出!");
+		DEXLOG("[ERR]输入格式出现错误，无法识别DEX或DEY,程序自动退出!");
 		return;
 	}
-	DumpD("输入格式正确，开始打印相关数据!");
+	DEXLOG("输入格式正确，开始打印相关数据!");
 	Dex_Header::Log(inAddr);
 	Dex_Maps::Log_Dex(inAddr);
 	//开始Dump最原始导入数据，防止数据变化先Dump后运行程序
-	DumpD("开始自动脱壳!");
-	DumpD("Dump_DexFile@Dump Demo 1!");
+	DEXLOG("开始自动脱壳!");
+	DEXLOG("Dump_DexFile@Dump Demo 1!");
 	DexUtil::SaveFile(inAddr,inLen,AppName,DexUtil::GetTimeName("Demo1"));
-	DumpD("Dump_DexFile@创建子线程!");
+	DEXLOG("Dump_DexFile@创建子线程!");
 	DumpInfo* info = (DumpInfo*)malloc(sizeof(DumpInfo)+1);
 	memset(info,0,sizeof(DumpInfo)+1);
 	info->addr = DexUtil::GetBase(inAddr);
 	info->len = inLen;
 	info->Dex = (DexFile*)inDex;
 	info->BackOldDex = DexUtil::Alloc(inLen);
-	memcpy(info->BackOldDex,DexUtil::GetBase(inAddr),inLen);
+	memcpy(info->BackOldDex,DexUtil::GetBase(inAddr),0x70);
 	pthread_t thread;
 	pthread_create(&thread,NULL,Dex_Parse,info);
 }

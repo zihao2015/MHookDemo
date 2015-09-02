@@ -536,8 +536,7 @@ typedef struct DexFile {
 //
 
 //
-#define DumpD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, "Substrate Dump", __VA_ARGS__))
-#define Parse(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, "Substrate Parse", __VA_ARGS__))
+#define DEXLOG(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, "LsSub_DEX", __VA_ARGS__))
 //用于新建线程，传递数据
 typedef struct DumpInfo{
 	void* addr;

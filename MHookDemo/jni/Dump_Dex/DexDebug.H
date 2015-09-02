@@ -32,7 +32,7 @@ public:
 ************************************************************
 */
 	Dex_Debug(DexFile* inDex,Dex_Maps* inMap){
-		Parse("Dex_Debug");
+		DEXLOG("[Parse]Dex_Debug");
 		mapsItem* inMapsItem = inMap->getTypeItem(kDexTypeDebugInfoItem);
 		if(inMapsItem == NULL)return;
 		u4	mMemStart =(u4)inDex->pHeader + inMapsItem->offset;
@@ -42,15 +42,15 @@ public:
 			_List->BS.SetLoadOffset((u4)mMem-(u4)inDex->pHeader);
 			mMem = readLeb128(mMem,&_List->number);
 			mMem = readLeb128(mMem,&_List->Size_Reg);
-			Parse("Dex_Debug number:%08x",_List->number);
-			Parse("Dex_Debug Size_Reg:%08x",_List->Size_Reg);
+//			Parse("Dex_Debug number:%08x",_List->number);
+//			Parse("Dex_Debug Size_Reg:%08x",_List->Size_Reg);
 			u4 mData = 0;
 			do{
 				mMem = readLeb128(mMem,&mData);
 				if(mData != 0){
 					DebugItem* _Item = (DebugItem*)Alloc(sizeof(DebugItem));
 					_Item->param_name = mData;
-					Parse("Dex_Debug param_name:%08x",mData);
+//					Parse("Dex_Debug param_name:%08x",mData);
 					_List->Item = (DebugItem*)AddToLast(_List->Item,_Item);
 				}
 			}while(mData != 0);
@@ -66,15 +66,15 @@ public:
 */
 	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps){
 		if(NULL == debug){
-			Parse("没有存在debug数据,直接退出!");
+			DEXLOG("没有存在debug数据,直接退出!");
 			return ;
 		}
 		//获取debug模块内存，没有就新建
-		Parse("Dex_Debug DatatoFile");
+		DEXLOG("Dex_Debug DatatoFile");
 		str_ModMem* modList =inMem->getByName("DebugInfo");
 		if(NULL == modList){
 			modList = inMem->newNameMem("DebugInfo",AlignAdd(GetSize(debug),0x04));
-			Parse("debug %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
+			DEXLOG("debug %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		U1*	mMem = modList->Addr;
 		DebugList* _List =debug;

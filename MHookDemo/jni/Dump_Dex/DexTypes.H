@@ -60,21 +60,6 @@ public:
 	}
 /*
 ************************************************************
-*				getIdsCount
-*获取Ids个数，然而空间为getIdsCount()*4
-************************************************************
-*/
-	size_t getIdsCount(){
-		typeItem* mitem = Idsitem;
-		size_t mNo = 0;
-		while(mitem != NULL){
-			mitem = mitem->next;
-			mNo++;
-		}
-		return mNo;
-	}
-/*
-************************************************************
 *				Dex_Types
 *解析TypeItem和TypeList
 *因为typeList在内存中，所以需要借助Base模块帮助其加载
@@ -84,7 +69,10 @@ public:
 ************************************************************
 */
 	Dex_Types(DexFile* inDex,Dex_Maps* inmaps){
-		Parse("Dex_Types Item");
+		//获取基本数据
+		DexHeader*  pHeader = (DexHeader*)inDex->pHeader;
+		mapsItem* _mapsItem =inmaps->getTypeItem(kDexTypeTypeIdItem);
+		DEXLOG("[Parse]Dex_Types %08x %08x",inDex->pHeader->typeIdsOff,inDex->pHeader->typeIdsSize);
 		//获取typeIds实际地址
 		u4* mMemIds =(u4*)AddAddr2(inDex->pHeader,inDex->pHeader->typeIdsOff);
 		//遍历typeIds
@@ -92,20 +80,20 @@ public:
 		for(int m_i = 0;m_i < inDex->pHeader->typeIdsSize;m_i++){			typeItem* _item = (typeItem*)Alloc(sizeof(typeItem));
 			_item->type = *mMemIds++;
 			if(_idsitem == NULL){
-				Idsitem = (typeList*)AddToLast(Idsitem,_item);
-				_idsitem = (typeList*)GetLastLink(Idsitem);
+				Idsitem = (typeItem*)AddToLast(Idsitem,_item);
+				_idsitem = (typeItem*)GetLastLink(Idsitem);
 			}else{
-				_idsitem = (typeList*)AddLink(_idsitem,_item);
+				_idsitem = (typeItem*)AddLink(_idsitem,_item);
 			}
 		}
 		//查找Maps中是否存在TypeList
-		Parse("Dex_Types List");
-		mapsItem* _mapsItem = inmaps->getTypeItem(kDexTypeTypeList);
 		Codelist = NULL;
+		_mapsItem = inmaps->getTypeItem(kDexTypeTypeList);
 		if(NULL == _mapsItem){
-			Parse("Dex_Types List不存在");
+			DEXLOG("[Parse]Dex_Types List不存在");
 			return;
 		}
+		DEXLOG("[Parse]Dex_Types List %08x %08x",_mapsItem->offset, _mapsItem->size);
 		//存在Type list，对Type list进行遍历
 		u4* mMemList =(u4*)AddAddr2(inDex->pHeader, _mapsItem->offset);
 		u4	mMemStart = (u4)mMemList;
@@ -127,6 +115,7 @@ public:
 			mMemList = (u4*)AlignAdd((u4)mMemList,0x04);
 			_List->BS.MemSize =SubAddr2(mMemList,mMemStart);
 			mMemStart =(u4)mMemList;
+			//将_item添加到列表中，AddToLast非常耗时
 			if(_Codelist == NULL){
 				Codelist = (typeList*)AddToLast(Codelist,_List);
 				_Codelist = (typeList*)GetLastLink(Codelist);
@@ -146,17 +135,17 @@ public:
 */
 	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		Parse("Dex_Types IDStoFile");
+		DEXLOG("Dex_Types IDStoFile");
 		str_ModMem* modIds =inMem->getByName("TypeIDS");
 		if(modIds == NULL){
-			modIds = inMem->newNameMem("TypeIDS",getIdsCount()*4);
-			Parse("Type Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			modIds = inMem->newNameMem("TypeIDS",GetCount(Idsitem)*4);
+			DEXLOG("Type Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//修改maps偏移地址
 		inmaps->getTypeItem(kDexTypeTypeIdItem)->offset = modIds->Offset;
-		inmaps->getTypeItem(kDexTypeTypeIdItem)->size = getIdsCount();
+		inmaps->getTypeItem(kDexTypeTypeIdItem)->size = GetCount(Idsitem);
 		inheader->Header->typeIdsOff = modIds->Offset;
-		inheader->Header->typeIdsSize = getIdsCount();
+		inheader->Header->typeIdsSize = GetCount(Idsitem);
 		//设置Type IDS数据
 		u4* memIds = (u4*)modIds->Addr;
 		typeItem* _item = Idsitem;
@@ -174,12 +163,12 @@ public:
 ************************************************************
 */
 	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps){
-		Parse("Dex_Types DatatoFile");
+		DEXLOG("Dex_Types DatatoFile");
 		//判断是否存在 IDSString段，不存在就添加IDSString段
 		str_ModMem* modList =inMem->getByName("TypeList");
 		if(NULL == modList){
 			modList = inMem->newNameMem("TypeList",AlignAdd(getCodeLen(),0x04));
-			Parse("TypeList %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
+			DEXLOG("TypeList %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//获取List数据
 		str_ModMem* memCode = inMem->getByName("TypeList");
@@ -201,7 +190,7 @@ public:
 				mitem = mitem->next;
 				memItem++;
 			}
-			memItem = Ali(memItem,0x04);
+			memItem = (u2*)Ali(memItem,0x04);
 			memList = (u4*)memItem;
 			mlist = mlist->next;/**/
 		}
@@ -214,7 +203,7 @@ public:
 */
 	void SettypeList(str_ModMem* inMem){
 		typeList* mlist = Codelist;
-		Parse("type List Offset:0x%08x",inMem->Offset);
+		DEXLOG("type List Offset:0x%08x",inMem->Offset);
 		u4* mSIZE= (u4*)inMem->Addr;
 		size_t Off_File = inMem->Offset;
 		while(mlist != NULL){
@@ -229,14 +218,12 @@ public:
 				memItem++;
 			}
 			//设置内存对齐
-			memItem = Ali(memItem,0x04);
+			memItem = (u2*)Ali(memItem,0x04);
 			mSIZE = (u4*)memItem;
 			Off_File = (u4)mSIZE - (u4)inMem->Addr + inMem->Offset;
 			mlist = mlist->next;/**/
 		}
 	}
 };
-
-
 #endif
 

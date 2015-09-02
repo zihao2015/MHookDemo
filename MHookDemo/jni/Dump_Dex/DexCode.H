@@ -74,7 +74,7 @@ public:
 			 }
 			 mCode = mCode->next;
 		 }
-		 Parse("Dex_Code LoadToFile %08x",inLoadOff);
+//		 Parse("Dex_Code LoadToFile %08x",inLoadOff);
 		 return inLoadOff;
 	 }
 /*
@@ -84,7 +84,7 @@ public:
 ************************************************************
 */
 	Dex_Code(DexFile* inDex){
-		Parse("Dex_Code no add to link");
+		DEXLOG("[Parse]Dex_Code no add to link");
 	}
 /*
 ************************************************************
@@ -156,7 +156,7 @@ public:
 			mMem = (u1*)((u4)(mMem+3)&(~3));
 			//直接获取保存数据
 			mCode->Try_CatchSize =(u4)mMem - (u4)mCode->Try_CatchIngfo;
-			Parse("Code  Try_CatchIngfo %08x %08x",mCode->Try_CatchIngfo,mCode->Try_CatchSize);
+			DEXLOG("Code  Try_CatchIngfo %08x %08x",mCode->Try_CatchIngfo,mCode->Try_CatchSize);
 		}
 
 		mCode->BS.SetMemSize((u4)mMem - mMemStart);
@@ -170,16 +170,16 @@ public:
 */
 	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps,Dex_Debug* debug){
 		if(NULL == Code){
-			Parse("没有存在Code数据,直接退出!");
+			DEXLOG("没有存在Code数据,直接退出!");
 			return ;
 		}
 		//获取Code模块内存，没有就新建
-		Parse("Code DatatoFile");
+		DEXLOG("Code DatatoFile");
 		str_ModMem* modList =inMem->getByName("Code");
 		if(NULL == modList){
 			modList = inMem->newNameMem("Code",AlignAdd(GetSize(Code),0x1000));
-			Parse("Code Addr %08x Length %08x Offset %08x",modList->Addr,modList->Length,modList->Offset);
-			Parse("Code  GetCount %08x ",GetCount(Code));
+			DEXLOG("Code Addr %08x Length %08x Offset %08x",modList->Addr,modList->Length,modList->Offset);
+			DEXLOG("Code  GetCount %08x ",GetCount(Code));
 		}
 		//设置Code
 		inmaps->setTypeOffset(kDexTypeCodeItem,modList->Offset);

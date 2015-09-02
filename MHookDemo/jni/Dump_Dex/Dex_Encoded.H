@@ -69,12 +69,15 @@ public:
 ************************************************************
 */
 	Dex_Encoded(DexFile* inDex,Dex_Maps* inmaps){
-		Parse("[+]Dex_Encoded");
+		//获取基本数据
+		DexHeader*  pHeader = (DexHeader*)inDex->pHeader;
+		mapsItem* _mapsItem =inmaps->getTypeItem(kDexTypeEncodedArrayItem);
+		DEXLOG("[Parse]Dex_Encoded %08x %08x",_mapsItem->offset,_mapsItem->size);
 		//设置起始地址
-		mapsItem* inMapEncoded = inmaps->getTypeItem(kDexTypeEncodedArrayItem);
-		u1* encodedIds =(u1*)((u1*)inDex->pHeader + inMapEncoded->offset);
+		u1* encodedIds =(u1*)((u1*)inDex->pHeader + _mapsItem->offset);
 		//遍历全部Encoded_List
-		for(int m_i = 0;m_i < inMapEncoded->size;m_i++){
+		Encoded_List* _CodeList = NULL;
+		for(int m_i = 0;m_i < _mapsItem->size;m_i++){
 			Encoded_List* mlist = (Encoded_List*)Alloc(sizeof(Encoded_List));
 			mlist->BS.Offset_Load =(u4)encodedIds - (u4)inDex->pHeader;
 			mlist->Itemsize = readLeb128(encodedIds);
@@ -102,7 +105,13 @@ public:
 			}
 			mOffset = (size_t)encodedIds - mOffset;
 			mlist->BS.MemSize = mOffset;
-			CodeList =(Encoded_List*)AddToLast(CodeList,mlist);
+			//将_item添加到列表中，AddToLast非常耗时
+			if(_CodeList == NULL){
+				CodeList = (Encoded_List*)AddToLast(CodeList,mlist);
+				_CodeList = (Encoded_List*)GetLastLink(CodeList);
+			}else{
+				_CodeList = (Encoded_List*)AddLink(_CodeList,mlist);
+			}
 		}
 	}
 /*
@@ -113,15 +122,15 @@ public:
 ************************************************************
 */
 	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps){
-		Parse("[+]Dex_Encoded DatatoFile");
+		DEXLOG("[+]Dex_Encoded DatatoFile");
 		if(NULL == CodeList){
-			Parse("没有储存数据!");
+			DEXLOG("没有储存数据!");
 			return ;
 		}
 		str_ModMem* modList =inMem->getByName("EncodedArray");
 		if(NULL == modList){
 			modList = inMem->newNameMem("EncodedArray",AlignAdd(GetSize(CodeList),0x04));
-			Parse("EncodedArray %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
+			DEXLOG("EncodedArray %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS
 		inmaps->getTypeItem(kDexTypeEncodedArrayItem)->offset = modList->Offset;
@@ -135,38 +144,6 @@ public:
 			Encoded_Item* mitem = mlist->item;
 			mMem = writeL128(mMem,mlist->Itemsize);
 			//遍历子项
-			while(mitem != NULL){
-				mMem = writeL128(mMem,mitem->type);
-				switch(mitem->ValueLen){
-				case 4:
-					*(mMem+3) = (mitem->Value>>24) &0xFF;
-				case 3:
-					*(mMem+2) = (mitem->Value>>16) &0xFF;
-				case 2:
-					*(mMem+1) = (mitem->Value>>8) &0xFF;
-				case 1:
-					*mMem = mitem->Value &0xFF;
-				}
-				mMem += mitem->ValueLen;
-				mitem = mitem->next;
-			}
-			mlist = mlist->next;
-		}
-	}
-/*
-************************************************************
-*				Dex_Encoded
-*老函数新版不会使用
-************************************************************
-*/
-	void SetMemory(str_ModMem* inMem){
-		Parse("[+]Encoded FileOffset:0x%08x",inMem->Offset);
-		u1* mMem = inMem->Addr;
-		Encoded_List* mlist = CodeList;
-		while(mlist != NULL){
-			mlist->BS.Offset_File = (u4)mMem - (u4)inMem->Addr + inMem->Offset;
-			Encoded_Item* mitem = mlist->item;
-			mMem = writeL128(mMem,mlist->Itemsize);
 			while(mitem != NULL){
 				mMem = writeL128(mMem,mitem->type);
 				switch(mitem->ValueLen){

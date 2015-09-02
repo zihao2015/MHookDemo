@@ -389,27 +389,27 @@ static int writeAdd128_Limit(unsigned char* inAddr,u4 inData){
 		FILE* mfd=fopen(filePath,"wb");
 		//查找可写文件路径
 		if(!mfd){
-			DumpD("Fail SD Path:%s",filePath);
-			DumpD("Mod_Mem::SaveFile() SD Open file fail!");
+			DEXLOG("[Dump]Fail SD Path:%s",filePath);
+			DEXLOG("[Dump]Mod_Mem::SaveFile() SD Open file fail!");
 			memset(filePath,0,1024);
 			if(appName != NULL){
 				sprintf(filePath,"/data/data/%s/%s",appName,inFile);
 				mfd=fopen(filePath,"wb");
 				if(!mfd){
-					DumpD("Fail Data_Data Path:%s",filePath);
-					DumpD("Mod_Mem::SaveFile() Data Open file fail!");
+					DEXLOG("[Dump]Fail Data_Data Path:%s",filePath);
+					DEXLOG("[Dump]Mod_Mem::SaveFile() Data Open file fail!");
 					free(filePath);
 					return;
 				}
 			}else{
-				DumpD("Fail appName Is Null");
+				DEXLOG("[Dump]Fail appName Is Null");
 				free(filePath);
 				return ;
 			}
 		}
 		fwrite(addr,1,inLen,mfd);
 		fclose(mfd);
-		DumpD("Dump File Path:%s",filePath);
+		DEXLOG("[Dump]Dump File Path:%s",filePath);
 		free(filePath);
 	}
 /*
@@ -422,11 +422,10 @@ static int writeAdd128_Limit(unsigned char* inAddr,u4 inData){
 	static char*  GetTimeName(char* inName){
 		struct timeval tv;
 		gettimeofday(&tv,NULL);
-		int m_HookS = tv.tv_sec%60;
 		int m_HookM = (tv.tv_sec/60)%60;
 		int m_HookH = (tv.tv_sec/3600)%24;
 		char* mName = (char*)Alloc(1024);
-		sprintf(mName,"%s_%02d_%02d_%02d",inName,m_HookH,m_HookM,m_HookS);
+		sprintf(mName,"%s_%02d_%02d",inName,m_HookH,m_HookM);
 		return mName;
 	}
 /*
