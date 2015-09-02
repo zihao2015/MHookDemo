@@ -61,7 +61,7 @@ obj/local/armeabi/objs/-Dump_Dex/Dump_Dex/Dump_Dex.o: \
  jni/Dump_Dex/DexMethods.H jni/Dump_Dex/DexClassDef.H \
  jni/Dump_Dex/Dex_Encoded.H jni/Dump_Dex/Dex_Annot.H \
  jni/Dump_Dex/DexClassCode.H jni/Dump_Dex/DexCode.H \
- jni/Dump_Dex/DexDebug.H jni/Dump_Dex/Dex_Base64.H
+ jni/Dump_Dex/DexDebug.H
 
 D:/PATH/Android/android-ndk-r10x64/platforms/android-L/arch-arm/usr/include/sys/time.h:
 
@@ -204,5 +204,3 @@ jni/Dump_Dex/DexClassCode.H:
 jni/Dump_Dex/DexCode.H:
 
 jni/Dump_Dex/DexDebug.H:
-
-jni/Dump_Dex/Dex_Base64.H:

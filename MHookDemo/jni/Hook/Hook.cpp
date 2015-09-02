@@ -8,7 +8,11 @@
 //dvm  Hook 段
 #define libdvm			"/system/lib/libdvm.so"
 #define dexFileParse	"_Z12dexFileParsePKhji"
+#define dvmDexFileOpenFromFd "_Z20dvmDexFileOpenFromFdiPP6DvmDex"
+#define dvmDexFileOpenPartial "_Z21dvmDexFileOpenPartialPKviPP6DvmDex"
+//libc
 #define libc			"/system/lib/libc.so"
+#define open			"open"
 #define fopen			"fopen"
 #define mmap			"mmap"
 #define ptrace			"ptrace"
@@ -17,7 +21,8 @@
 
 //调用外部Dump_DexFile
 extern void Dump_DexFile(void* inAddr,size_t inLen,void* inDex);
-//
+//__________________________________________________________________________________________
+//									Libdvm
 void* (*_dexFileParse)(int *, unsigned int, int);
 void* My_dexFileParse(int *inAddr, unsigned int length, int parseFlags){
 	void* Out_DexFile = _dexFileParse(inAddr,length,parseFlags);
@@ -28,6 +33,26 @@ void* My_dexFileParse(int *inAddr, unsigned int length, int parseFlags){
 	}/**/
 	Dump_DexFile(inAddr,length,Out_DexFile);
 	return Out_DexFile;
+}
+//dvmDexFileOpenFromFd
+int (*_dvmDexFileOpenFromFd)(int fd, void* ppDvmDex);
+int My_dvmDexFileOpenFromFd(int fd, void* ppDvmDex){
+	LOGD("LibCall My_dvmDexFileOpenFromFd");
+	return _dvmDexFileOpenFromFd(fd,ppDvmDex);
+}
+//dvmDexFileOpenPartial
+int (*_dvmDexFileOpenPartial)(const void* addr, int len, void* ppDvmDex);
+int My_dvmDexFileOpenPartial(const void* addr, int len, void* ppDvmDex){
+	LOGD("LibCall _dvmDexFileOpenPartial");
+	return _dvmDexFileOpenPartial(addr,len,ppDvmDex);
+}
+//__________________________________________________________________________________________
+//									Libc
+//open	int open(const char*pathname,int flags);
+void* (*_open)(const char * path,int flags);
+void* My_open(const char * path,int flags){
+	LOGD("LibCall open Path:%s,Mode:%d",path,flags);
+	return _open(path,flags);
 }
 //fopen
 void* (*_fopen)(const char * path,const char * mode);
@@ -80,11 +105,23 @@ int Hook_Main(){
 		if(mFun != NULL){
 			MSHookFunction(mFun,(void*)&My_dexFileParse,(void**)&_dexFileParse);
 		}
+		mFun = MSFindSymbol(image,dvmDexFileOpenFromFd);
+		if(mFun != NULL){
+			MSHookFunction(mFun,(void*)&My_dvmDexFileOpenFromFd,(void**)&_dvmDexFileOpenFromFd);
+		}
+		mFun = MSFindSymbol(image,dvmDexFileOpenPartial);
+		if(mFun != NULL){
+			MSHookFunction(mFun,(void*)&My_dvmDexFileOpenPartial,(void**)&_dvmDexFileOpenPartial);
+		}
 	}
 	// Hook fopen，
 #ifdef 	_DEBUG_
 	image = MSGetImageByName(libc);
 	if(image != NULL){
+		mFun = MSFindSymbol(image,open);
+		if(mFun != NULL){
+			MSHookFunction(mFun,(void*)&My_open,(void**)&_open);
+		}
 		mFun = MSFindSymbol(image,fopen);
 		if(mFun != NULL){
 			MSHookFunction(mFun,(void*)&My_fopen,(void**)&_fopen);

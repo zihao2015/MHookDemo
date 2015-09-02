@@ -3,6 +3,7 @@
 #define AddAddr2(arg0,arg1)		((u4)arg0+(u4)arg1)
 #define SubAddr2(arg0,arg1)		((u4)arg0-(u4)arg1)
 #define SubAddr3(arg0,arg1,arg2)		((u4)arg0-(u4)arg1-(u4)arg2)
+#define Ali(arg0,arg1)			(((u4)arg0+((u4)arg1-1))&(~((u4)arg1-1)))
 /*
  *			单向链接基本类
  * 1.Offset_Load表示内存加载地址
@@ -135,6 +136,20 @@ size_t GetCount(void* inlink){
 }
 /*
 ************************************************************
+*				GetLastLink
+*将数据添加到链表
+************************************************************
+*/
+void* GetLastLink(void* inlink){
+	Link* link =(Link*)inlink;
+	if(link == NULL)return NULL;
+	while(link->next != NULL){
+		link = link->next;
+	}
+	return link;
+}
+/*
+************************************************************
 *			DexUtil
 *Dex通用类
 ************************************************************
@@ -148,7 +163,7 @@ public:
 * @return	result -> 返回下一个数据地址
 ************************************************************
 */
-unsigned char* NEXTLeb128(void* inAddr){
+static unsigned char* NEXTLeb128(void* inAddr){
 	unsigned char* in_Addr =(unsigned char*)inAddr;
 	int m_i;
 	for(m_i = 0;m_i < 5;m_i++){
@@ -165,7 +180,7 @@ unsigned char* NEXTLeb128(void* inAddr){
 * @return	result ->	读取readLeb128(unsigned leb128)数据
 ************************************************************
 */
-u4 readLeb128(void* inAddr){
+static u4 readLeb128(void* inAddr){
 	unsigned char* in_Addr = (unsigned char*)inAddr;
 	u4 result = 0;
 	for(int m_i = 0;m_i < 5;m_i++){
@@ -183,7 +198,7 @@ u4 readLeb128(void* inAddr){
 * @return	result ->	读取readLeb128(signed leb128)数据
 ************************************************************
 */
-u4 readSLeb128(unsigned char* inAddr){
+static u4 readSLeb128(unsigned char* inAddr){
 	u4	result_2 = 0xFFFFFFFF;
 	u4	result_1 = 0x00000000;
 	for(int m_i = 0;m_i < 5;m_i++){
@@ -208,7 +223,7 @@ u4 readSLeb128(unsigned char* inAddr){
 * @return	result ->	返回下一个数据地址
 ************************************************************
 */
-unsigned char* readLeb128(void* inAddr,u4* inDeta){
+static unsigned char* readLeb128(void* inAddr,u4* inDeta){
 	*inDeta = readLeb128(inAddr);
 	return NEXTLeb128(inAddr);
 }/*
@@ -219,7 +234,7 @@ unsigned char* readLeb128(void* inAddr,u4* inDeta){
 * @return	result ->	返回下一个数据地址
 ************************************************************
 */
-unsigned char* readSLeb128(unsigned char* inAddr,u4* inDeta){
+static unsigned char* readSLeb128(unsigned char* inAddr,u4* inDeta){
 	*inDeta = readSLeb128(inAddr);
 	return NEXTLeb128(inAddr);
 }
@@ -230,7 +245,7 @@ unsigned char* readSLeb128(unsigned char* inAddr,u4* inDeta){
 * @return	result ->	返回Leb128数据宽度
 ************************************************************
 */
-u4 readLimitLeb128(unsigned char* inAddr){
+static u4 readLimitLeb128(unsigned char* inAddr){
 	int m_i = 0;
 	for(m_i = 0;m_i < 5;m_i++){
 		if(*(inAddr+m_i) <= 0x7f){
@@ -247,7 +262,7 @@ u4 readLimitLeb128(unsigned char* inAddr){
 * @return	result ->	返回Leb128数据宽度
 ************************************************************
 */
-unsigned char* writeL128(unsigned char* inAddr,u4 mData){
+static unsigned char* writeL128(unsigned char* inAddr,u4 mData){
 	int m_i;
 	for(m_i = 0;m_i< 5;m_i++){
 		u1 mByte =	mData &0x7F;
@@ -261,7 +276,7 @@ unsigned char* writeL128(unsigned char* inAddr,u4 mData){
 	}
 	return NEXTLeb128(inAddr);
 }
-unsigned char* writeSL128(unsigned char* inAddr,u4 mData){
+static unsigned char* writeSL128(unsigned char* inAddr,u4 mData){
 	if((mData&0x80000000) == 0){
 		writeL128(inAddr,mData);
 	}else{
@@ -291,7 +306,7 @@ unsigned char* writeSL128(unsigned char* inAddr,u4 mData){
 * @return	result ->	返回Leb128数据宽度
 ************************************************************
 */
-int writeAdd128_Limit(unsigned char* inAddr,u4 inData){
+static int writeAdd128_Limit(unsigned char* inAddr,u4 inData){
 	u4 mLength = readLimitLeb128(inAddr);	for(int m_i = 0;m_i< mLength;m_i++){
 		u1 mByte = (inData>>(m_i*7))&0x7F;
 		if((m_i+1)!= mLength){
@@ -310,7 +325,7 @@ int writeAdd128_Limit(unsigned char* inAddr,u4 inData){
 * @return	out ->		内存指针
 ************************************************************
 */
-	void* Alloc(size_t inSize){
+	static void* Alloc(size_t inSize){
 		void* out = malloc(inSize);
 		memset(out,0,inSize);
 		return out;
@@ -324,7 +339,7 @@ int writeAdd128_Limit(unsigned char* inAddr,u4 inData){
 * @return	out ->		对齐需要宽度
 ************************************************************
 */
-	size_t Align(size_t inAddr,size_t inAli){
+	static size_t Align(size_t inAddr,size_t inAli){
 		size_t mSzie = inAli - inAddr&(inAli-1);
 		return  mSzie;
 	}
@@ -341,6 +356,93 @@ int writeAdd128_Limit(unsigned char* inAddr,u4 inData){
 	size_t AlignAdd(size_t inAddr,size_t inAli){
 		size_t mSzie = inAli - inAddr&(inAli-1);
 		return  inAddr+mSzie;
+	}
+/*
+************************************************************
+*			isDex
+*判断是否是Dex文件
+* @param	inAddr ->	Dex起始地址
+* @return	bool ->		0->不是Dex或ODex文件
+* 						1->存在Dex或ODex的Magic
+************************************************************
+*/
+	static bool isDex(void* inAddr){
+		if((0 == memcmp(inAddr,"dex",3))||(0 == memcmp(inAddr,"dey",3))){
+			return 1;
+		}
+		return 0;
+	}
+/*
+************************************************************
+*			SaveFile
+*将内存数据保存成文件
+* @param	addr ->		内存起始地址
+* @param	inLen->		内存宽度
+* @param	appName ->	应用名字
+* @param	inFile ->	文件名字
+************************************************************
+*/
+	static void SaveFile(void* addr,size_t inLen,char* appName,char* inFile){
+		char* filePath = (char*)malloc(1024);
+		memset(filePath,0,1024);
+		sprintf(filePath,"/sdcard/DumpDex/%s",inFile);
+		FILE* mfd=fopen(filePath,"wb");
+		//查找可写文件路径
+		if(!mfd){
+			DumpD("Fail SD Path:%s",filePath);
+			DumpD("Mod_Mem::SaveFile() SD Open file fail!");
+			memset(filePath,0,1024);
+			if(appName != NULL){
+				sprintf(filePath,"/data/data/%s/%s",appName,inFile);
+				mfd=fopen(filePath,"wb");
+				if(!mfd){
+					DumpD("Fail Data_Data Path:%s",filePath);
+					DumpD("Mod_Mem::SaveFile() Data Open file fail!");
+					free(filePath);
+					return;
+				}
+			}else{
+				DumpD("Fail appName Is Null");
+				free(filePath);
+				return ;
+			}
+		}
+		fwrite(addr,1,inLen,mfd);
+		fclose(mfd);
+		DumpD("Dump File Path:%s",filePath);
+		free(filePath);
+	}
+/*
+************************************************************
+*			GetTimeName
+*获取实时时间名字
+* @param	inName ->	名字前缀
+************************************************************
+*/
+	static char*  GetTimeName(char* inName){
+		struct timeval tv;
+		gettimeofday(&tv,NULL);
+		int m_HookS = tv.tv_sec%60;
+		int m_HookM = (tv.tv_sec/60)%60;
+		int m_HookH = (tv.tv_sec/3600)%24;
+		char* mName = (char*)Alloc(1024);
+		sprintf(mName,"%s_%02d_%02d_%02d",inName,m_HookH,m_HookM,m_HookS);
+		return mName;
+	}
+/*
+************************************************************
+*				Dex_Header
+*解析头文件
+************************************************************
+*/
+	static void* GetBase(void* inAddr){
+		u1* mAddr =(u1*)inAddr;
+		if(0 == memcmp(mAddr,"dey",3)){
+			return mAddr+0x28;
+		}else if(0 == memcmp(mAddr,"dex",3)){
+			return mAddr;
+		}
+		return NULL;
 	}
 };
 

@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ public class MainActivity extends Activity {
 	private List<PackageInfo> listdatas = new ArrayList<PackageInfo>();
 	private ListView mlistview ;
 	private Button button_Substrace;
+	private Button button_reset;
 	PackageManager pManager; 
 	public static String FILE_PATH;
 	public static String filter_app;
@@ -39,6 +41,7 @@ public class MainActivity extends Activity {
 		pManager = getPackageManager();
 		mlistview = (ListView)findViewById(R.id.list_app);
 		button_Substrace = (Button)findViewById(R.id.button_Substrace);
+		button_reset =  (Button)findViewById(R.id.button_Reset);
 		listdatas = getAllApps(MainActivity.this);
 		final MyListAdapter myListAdapter = new MyListAdapter(listdatas);
 		mlistview.setAdapter(myListAdapter);
@@ -77,6 +80,11 @@ public class MainActivity extends Activity {
 			}
 		});
 		TimeLog.Log();
+		button_reset.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+			}
+		});
 	}
 /**
  * 

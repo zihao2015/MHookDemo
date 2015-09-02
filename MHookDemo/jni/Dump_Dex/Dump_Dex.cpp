@@ -6,25 +6,11 @@
 #include "Dump_Dex.H"
 #include "Module_Mem.H"
 #include "DexParse.H"
-#include "Dex_Base64.H"
-//
+#include "DexUtil.H"
+#include "DexHeader.H"
+//外部保存APP包名
 extern char* AppName;
-//__________________________________________________________
-/*
-*					Dump说明
-* 1.传入参数为DexFile*
-* 2.通过被解析的DexFile*,得知BassAddr和Dex Length
-* 3.将Dex内存连续的数据全部获取
-* 5.保存文件
-*/
-//__________________________________________________________
-/*
-*				关于修复Dex_AnnotDirDex_AnnotDir
-* 1.不需要修复Mapitems
-* 2.根据DexFile结构体，判断需要的内存是否的Dex所需的内存内。
-*	不存在内存中就要进行修复偏移。
-* 3.
-*/
+
 //__________________________________________________________
 /*
 ************************************************************
@@ -37,39 +23,17 @@ extern char* AppName;
 ************************************************************
 */
 void* Dex_Parse(void* in){
+	//获取传递参数，并打印数据
 	DumpInfo* Info = (DumpInfo*)in;
-	struct timeval tv;
-	gettimeofday(&tv,NULL);
-	int m_HookS = tv.tv_sec%60;
-	int m_HookM = (tv.tv_sec/60)%60;
-	int m_HookH = (tv.tv_sec/3600)%24;
-	char* saveName = (char*)malloc(1024);
-	memset(saveName,0,1024);
-	LOGD("inDex:0x%08X,length:0x%08X,DexFile:0x%08X",Info->addr,Info->len,Info->Dex);
-	DumpD("先直接DUMP dexFileParse 函数传进来的参数!");
-	//版本1.Dump
-	DumpD("@下载Demo1!");
-	Mod_Mem *mem = new Mod_Mem();
-	str_ModMem* mMem = mem->newNameMem("Demo1",Info->len);
-	memcpy(mMem->Addr,(void*)Info->Dex->pHeader,Info->len);
-	sprintf(saveName,"Demo1_%02d_%02d.dex",m_HookM,m_HookS);
-	mem->SaveFile(AppName,saveName);
-	DumpD("延时15S!");
+	DumpD("延时10S!");
 	sleep(10);
-	DumpD("下载Demo2!");
-	//版本2.Dump
-	//mMem = mem->newNameMem("Demo2",Info->len);
-	memcpy(mMem->Addr,(void*)Info->Dex->pHeader,Info->len);
-	sprintf(saveName,"Demo2_%02d_%02d.dex",m_HookM,m_HookS);
-	mem->SaveFile(AppName,saveName);
-//	return NULL;
-	DumpD("下载Demo3 ing!");
-	//版本3.只修复ClassDef
+	DumpD("正在回写DexHeader数据，防止解析后加固修改 Header!");
+	memcpy(Info->addr,Info->BackOldDex,0x70);
+	DumpD("下载Demo2，下载延迟之后的DexFile!");
+	DexUtil::SaveFile(Info->addr,Info->len,AppName,DexUtil::GetTimeName("Demo2"));
+	DumpD("下载Demo3，先解码DexFile然后合并!");
 	DexParse* parse = new DexParse(Info->addr,Info->Dex);
-	memset(saveName,0,1024);
-	sprintf(saveName,"Demo3_%02d_%02d.dex",m_HookM,m_HookS);
-	parse->DumpToFile(AppName,saveName);
-	//
+	parse->DumpToFile(AppName,DexUtil::GetTimeName("Demo3"));
 	return NULL;
 }
 /*
@@ -80,12 +44,26 @@ void* Dex_Parse(void* in){
 ************************************************************
 */
 void Dump_DexFile(void* inAddr,size_t inLen,void* inDex){
+	LOGD("inDex:0x%08X,length:0x%08X,DexFile:0x%08X",inAddr,inLen,inDex);
+	if(!DexUtil::isDex(inAddr)){
+		DumpD("输入格式出现错误，无法识别DEX或DEY,程序自动退出!");
+		return;
+	}
+	DumpD("输入格式正确，开始打印相关数据!");
+	Dex_Header::Log(inAddr);
+	Dex_Maps::Log_Dex(inAddr);
+	//开始Dump最原始导入数据，防止数据变化先Dump后运行程序
+	DumpD("开始自动脱壳!");
+	DumpD("Dump_DexFile@Dump Demo 1!");
+	DexUtil::SaveFile(inAddr,inLen,AppName,DexUtil::GetTimeName("Demo1"));
 	DumpD("Dump_DexFile@创建子线程!");
 	DumpInfo* info = (DumpInfo*)malloc(sizeof(DumpInfo)+1);
 	memset(info,0,sizeof(DumpInfo)+1);
-	info->addr = inAddr;
+	info->addr = DexUtil::GetBase(inAddr);
 	info->len = inLen;
 	info->Dex = (DexFile*)inDex;
+	info->BackOldDex = DexUtil::Alloc(inLen);
+	memcpy(info->BackOldDex,DexUtil::GetBase(inAddr),inLen);
 	pthread_t thread;
 	pthread_create(&thread,NULL,Dex_Parse,info);
 }

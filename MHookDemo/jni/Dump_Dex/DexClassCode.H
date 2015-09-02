@@ -44,7 +44,7 @@ public:
 	Dex_ClassCode(DexFile* inDex,Dex_Maps* inmaps,Dex_Code* code){
 		Parse("Dex_ClassCode");
 		//MethodNum为添加，Code个数
-		mapsItem* inMapClassCode =inmaps->getTypeOffset(kDexTypeClassDataItem);
+		mapsItem* inMapClassCode =inmaps->getTypeItem(kDexTypeClassDataItem);
 		int MethodNum = 0;
 		//定位头地址
 		u1* mCodeAddr =(u1*)((u4)inDex->pHeader + inMapClassCode->offset);

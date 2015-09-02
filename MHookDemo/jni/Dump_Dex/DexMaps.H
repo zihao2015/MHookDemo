@@ -29,40 +29,48 @@ public:
 	maplist* Map = NULL;
 /*
 ************************************************************
-*
-*
+*				Log_Maps
+*传入地址为Maps起始地址
 ************************************************************
 */
-	void LogMaps(){
-
+	static void Log(void* inAddr){
+		Parse("Dex_Maps Log Addr:%08x",inAddr);
+		u4	mSize = *(u4*)inAddr;
+		DexMapId* MapsIds = (DexMapId*)((u1*)inAddr+4);
+		Parse("Maps Size :%08x",mSize);
+		for(int m_i = 0;m_i < mSize;m_i++){
+			Parse("Type :%08x",MapsIds->type);
+			Parse("Unused :%08x",MapsIds->unused);
+			Parse("Size :%08x",MapsIds->size);
+			Parse("Offset :%08x",MapsIds->offset);
+			MapsIds++;
+		}
 	}
 /*
 ************************************************************
-*				getIdsCount
-*获取Ids个数
+*				Log_Addr
+*传入地址为Dex起始地址
 ************************************************************
 */
-	size_t getIdsCount(){
-		mapsItem* mitem = Map->item;
-		size_t mNo = 0;
-		while(mitem != NULL){
-			mitem = mitem->next;
-			mNo++;
-		}
-		return mNo;
+	static void Log_Dex(void* inDex){
+		DexHeader* pHeader = (DexHeader*)GetBase(inDex);
+		Log(pHeader->mapOff+(u1*)pHeader);
 	}
 /*
 ************************************************************
 *				Dex_Maps
-*解析Maps
+*解析Maps*
 ************************************************************
 */
 	Dex_Maps(DexFile* inDex){
 		Parse("Dex_Maps");
-		//获取Map个数
+		//获取起始地址和初始化Map结构
+		u1*	mapStart =(u1*)AddAddr2(inDex->pHeader,inDex->pHeader->mapOff);
 		Map = (maplist*)Alloc(sizeof(maplist));
-		Map->mapSize = *((u4*)((u1*)inDex->pHeader + inDex->pHeader->mapOff));
-		DexMapId* MapsIds =(DexMapId*)((u1*)inDex->pHeader + inDex->pHeader->mapOff+4);
+		//获取Map个数,设置Maps Item 结构起始地址
+		Log(mapStart);
+		Map->mapSize = *((u4*)mapStart);
+		DexMapId* MapsIds =(DexMapId*)(mapStart+4);
 		//遍历Map内容
 		for(int m_i = 0;m_i < Map->mapSize;m_i++){
 			mapsItem* _item = (mapsItem*)Alloc(sizeof(mapsItem));
@@ -76,30 +84,11 @@ public:
 	}
 /*
 ************************************************************
-*				setMaps
-************************************************************
-*/
-	void setMaps(str_ModMem* mMem){
-		*((u4*)mMem->Addr) =Map->mapSize;
-		mapsItem* mitem = Map->item;
-		Parse("[+]Maps Offset:0x%08x",mMem->Offset);
-		DexMapId* mapIds =(DexMapId*)(mMem->Addr+4);
-		while(mitem != NULL){
-			mapIds->type = mitem->type;
-			mapIds->unused = mitem->unused;
-			mapIds->size = mitem->size;
-			mapIds->offset = mitem->offset;
-			mapIds++;
-			mitem = mitem->next;
-		}
-	}
-/*
-************************************************************
 *				getTypeOffset
 *获取子模块结构体
 ************************************************************
 */
-	mapsItem* getTypeOffset(u2 in_type){
+	mapsItem* getTypeItem(u2 in_type){
 		mapsItem* mItem = Map->item;
 		while(mItem != NULL){
 			if(mItem->type == in_type){
@@ -137,14 +126,14 @@ public:
 		str_ModMem* modIds =inMem->getByName("MapsIDS");
 
 		if(modIds == NULL){
-			modIds = inMem->newNameMem("MapsIDS",getIdsCount()*12+4);
+			modIds = inMem->newNameMem("MapsIDS",Map->mapSize*0xC+4);
 			Parse("Dex_Maps DatatoFile %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//设置头系统文件中的数据
-		getTypeOffset(kDexTypeMapList)->offset = modIds->Offset;
-		getTypeOffset(kDexTypeMapList)->size = getIdsCount();
+		getTypeItem(kDexTypeMapList)->offset = modIds->Offset;
+		getTypeItem(kDexTypeMapList)->size = Map->mapSize;
 		inheader->Header->mapOff =modIds->Offset;
-		//
+		//遍历设置数据
 		*((u4*)modIds->Addr) =Map->mapSize;
 		mapsItem* mitem = Map->item;
 		DexMapId* mapIds =(DexMapId*)(modIds->Addr+4);

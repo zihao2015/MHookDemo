@@ -65,8 +65,8 @@ public:
 			Parse("Fileds Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//修改maps偏移地址
-		inmaps->getTypeOffset(kDexTypeFieldIdItem)->offset = modIds->Offset;
-		inmaps->getTypeOffset(kDexTypeFieldIdItem)->size = getIdsCount();
+		inmaps->getTypeItem(kDexTypeFieldIdItem)->offset = modIds->Offset;
+		inmaps->getTypeItem(kDexTypeFieldIdItem)->size = getIdsCount();
 		inheader->Header->fieldIdsOff = modIds->Offset;
 		inheader->Header->fieldIdsSize = getIdsCount();
 		//设置Fileds IDS数据

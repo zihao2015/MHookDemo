@@ -80,8 +80,8 @@ public:
 			Parse("ClassDefine %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//修改maps偏移地址
-		inmaps->getTypeOffset(kDexTypeClassDefItem)->offset = modIds->Offset;
-		inmaps->getTypeOffset(kDexTypeClassDefItem)->size = getIdsCount();
+		inmaps->getTypeItem(kDexTypeClassDefItem)->offset = modIds->Offset;
+		inmaps->getTypeItem(kDexTypeClassDefItem)->size = getIdsCount();
 		inheader->Header->classDefsOff = modIds->Offset;
 		inheader->Header->classDefsSize = getIdsCount();
 		 return ;

@@ -71,7 +71,7 @@ public:
 	Dex_Encoded(DexFile* inDex,Dex_Maps* inmaps){
 		Parse("[+]Dex_Encoded");
 		//设置起始地址
-		mapsItem* inMapEncoded = inmaps->getTypeOffset(kDexTypeEncodedArrayItem);
+		mapsItem* inMapEncoded = inmaps->getTypeItem(kDexTypeEncodedArrayItem);
 		u1* encodedIds =(u1*)((u1*)inDex->pHeader + inMapEncoded->offset);
 		//遍历全部Encoded_List
 		for(int m_i = 0;m_i < inMapEncoded->size;m_i++){
@@ -124,7 +124,7 @@ public:
 			Parse("EncodedArray %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS
-		inmaps->getTypeOffset(kDexTypeEncodedArrayItem)->offset = modList->Offset;
+		inmaps->getTypeItem(kDexTypeEncodedArrayItem)->offset = modList->Offset;
 		//
 		u1* mMem = modList->Addr;
 		Encoded_List* mlist = CodeList;

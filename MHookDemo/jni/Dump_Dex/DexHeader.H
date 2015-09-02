@@ -6,18 +6,29 @@
 #include "Dump_Dex.H"
 #include "Module_Mem.H" 
 #include "DexUtil.H"
-class Dex_Header{
+class Dex_Header:DexUtil{
 public:
 	DexHeader* Header = NULL;
 /*
 ************************************************************
 *				print
 * 打印头数据
+*提供Header地址，打印数据
 ************************************************************
 */
-	void print(const DexHeader* pHeader)
+	static void Log(void* inAddr)
 	{
 		Parse("Dex_Header@Log \n");
+		if(GetBase(inAddr) == NULL){
+			Parse("Dex_Header print err!\n");
+			return ;
+		}else if(GetBase(inAddr) == inAddr){
+			Parse("Dex_Header Dex !\n");
+		}else{
+			Parse("Dex_Header ODex!\n");
+		}
+		DexHeader* pHeader = (DexHeader*)GetBase(inAddr);
+		Parse("Dex Addr            : 0x%08x\n",pHeader);
 		Parse("magic               : '%.3s %.4s'\n", pHeader->magic,(char*)(pHeader->magic+4));
 		Parse("checksum            : %08x\n", pHeader->checksum);
 		Parse("signature           : %02x%02x...%02x%02x\n",
@@ -29,6 +40,8 @@ public:
 		Parse("link_size           : %d\n", pHeader->linkSize);
 		Parse("link_off            : %d (0x%06x)\n",
 			pHeader->linkOff, pHeader->linkOff);
+		Parse("mapOff            : %d (0x%06x)\n",
+					pHeader->mapOff, pHeader->mapOff);
 		Parse("string_ids_size     : %d\n", pHeader->stringIdsSize);
 		Parse("string_ids_off      : %d (0x%06x)\n",
 			pHeader->stringIdsOff, pHeader->stringIdsOff);
@@ -52,22 +65,13 @@ public:
 ************************************************************
 *				Dex_Header
 *解析头文件
+*拷贝保存头文件数据
 ************************************************************
 */
 	Dex_Header(DexFile* inDex){
-		print(inDex->pHeader);
+		Log((void*)inDex->pHeader);
 		Header = (DexHeader*)malloc(0x70);
 		memcpy(Header,inDex->pHeader,0x70);
-	}
-/*
-************************************************************
-*				Dex_Header
-* 设置头
-************************************************************
-*/
-	void SetHeader(str_ModMem* inMem){
-		Parse("[+]Header offset:0x%08x",inMem->Offset);
-		memcpy(inMem->Addr,Header,0x70);
 	}
 /*
 ************************************************************

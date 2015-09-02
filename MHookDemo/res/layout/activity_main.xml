@@ -4,10 +4,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <Button
-       android:id="@+id/button_inject"
+       android:id="@+id/button_Reset"
        android:layout_width="fill_parent"
        android:layout_height="wrap_content"
-       android:text="Substrace进程注入"/>
+       android:visibility="gone"
+       android:text="重启手机"/>
     <Button
        android:id="@+id/button_Substrace"
        android:layout_width="fill_parent"

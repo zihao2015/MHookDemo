@@ -33,7 +33,7 @@ public:
 */
 	Dex_Debug(DexFile* inDex,Dex_Maps* inMap){
 		Parse("Dex_Debug");
-		mapsItem* inMapsItem = inMap->getTypeOffset(kDexTypeDebugInfoItem);
+		mapsItem* inMapsItem = inMap->getTypeItem(kDexTypeDebugInfoItem);
 		if(inMapsItem == NULL)return;
 		u4	mMemStart =(u4)inDex->pHeader + inMapsItem->offset;
 		u1* mMem =(u1*)mMemStart;

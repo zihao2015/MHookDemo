@@ -68,8 +68,8 @@ public:
 			Parse("Proto Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//修改maps偏移地址
-		inmaps->getTypeOffset(kDexTypeProtoIdItem)->offset = modIds->Offset;
-		inmaps->getTypeOffset(kDexTypeProtoIdItem)->size = getIdsCount();
+		inmaps->getTypeItem(kDexTypeProtoIdItem)->offset = modIds->Offset;
+		inmaps->getTypeItem(kDexTypeProtoIdItem)->size = getIdsCount();
 		inheader->Header->protoIdsOff = modIds->Offset;
 		inheader->Header->protoIdsSize = getIdsCount();
 	}
@@ -88,8 +88,8 @@ public:
 				Parse("Proto Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 			}
 			//修改maps偏移地址
-			inmaps->getTypeOffset(kDexTypeProtoIdItem)->offset = modIds->Offset;
-			inmaps->getTypeOffset(kDexTypeProtoIdItem)->size = getIdsCount();
+			inmaps->getTypeItem(kDexTypeProtoIdItem)->offset = modIds->Offset;
+			inmaps->getTypeItem(kDexTypeProtoIdItem)->size = getIdsCount();
 			inheader->Header->protoIdsOff = modIds->Offset;
 			inheader->Header->protoIdsSize = getIdsCount();
 			//设置Proto IDS数据

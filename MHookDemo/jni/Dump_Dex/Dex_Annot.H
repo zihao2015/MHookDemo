@@ -135,7 +135,7 @@ public:
 ************************************************************
 */
 	void DexAnnot(DexFile* inDex,Dex_Maps* maps){
-		mapsItem* _mapsItem = maps->getTypeOffset(kDexTypeAnnotationItem);
+		mapsItem* _mapsItem = maps->getTypeItem(kDexTypeAnnotationItem);
 		if(_mapsItem == NULL){
 			Parse("[-]No Have Annot");
 			return ;
@@ -196,7 +196,7 @@ public:
 */
 	void Dex_AnnotDir(DexFile* inDex,Dex_Maps* maps){
 		//首先判断MAPS是否存在kDexTypeAnnotationsDirectoryItem段
-		mapsItem* _mapsItem = maps->getTypeOffset(kDexTypeAnnotationsDirectoryItem);
+		mapsItem* _mapsItem = maps->getTypeItem(kDexTypeAnnotationsDirectoryItem);
 		if(_mapsItem == NULL){
 			Parse("[+]No Have Annot DIR");
 			return ;
@@ -233,7 +233,7 @@ public:
 */
 	void Dex_Ann_SRL(DexFile* inDex,Dex_Maps* maps){
 		//首先判断MAPS是否存在kDexTypeAnnotationSetRefList段
-		mapsItem* _mapsItem = maps->getTypeOffset(kDexTypeAnnotationSetRefList);
+		mapsItem* _mapsItem = maps->getTypeItem(kDexTypeAnnotationSetRefList);
 		if(_mapsItem == NULL){
 			Parse("[+]No Have Annot SRL");
 			return ;
@@ -265,7 +265,7 @@ public:
 */
 	void Dex_Ann_Set(DexFile* inDex,Dex_Maps* maps){
 		//首先判断MAPS是否存在kDexTypeAnnotationSetRefList段
-		mapsItem* _mapsItem = maps->getTypeOffset(kDexTypeAnnotationSetItem);
+		mapsItem* _mapsItem = maps->getTypeItem(kDexTypeAnnotationSetItem);
 		if(_mapsItem == NULL){
 			Parse("[+]No Have Annot Set");
 			return ;
@@ -363,7 +363,7 @@ public:
 			Parse("Annot_Item %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS
-		inmaps->getTypeOffset(kDexTypeAnnotationItem)->offset = modList->Offset;
+		inmaps->getTypeItem(kDexTypeAnnotationItem)->offset = modList->Offset;
 		//初始化数据
 		Annot* m_Annot = annot;
 		u1* annot_Addr = (u1*)modList->Addr;
@@ -399,7 +399,7 @@ public:
 			Parse("AnnotSRL %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS
-		inmaps->getTypeOffset(kDexTypeAnnotationSetRefList)->offset = modList->Offset;
+		inmaps->getTypeItem(kDexTypeAnnotationSetRefList)->offset = modList->Offset;
 		//
 		Annot_SRL* mAnSRL = anSRL;
 		u4* mMemStart = (u4*)modList->Addr;
@@ -433,7 +433,7 @@ public:
 			Parse("Annot Set %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS
-		inmaps->getTypeOffset(kDexTypeAnnotationSetItem)->offset = modList->Offset;
+		inmaps->getTypeItem(kDexTypeAnnotationSetItem)->offset = modList->Offset;
 		//设置Annot_Set
 		Annot_Set* mAnSet = anSet;
 		u4* mAnnotSet = (u4*)modList->Addr;
@@ -468,7 +468,7 @@ public:
 			Parse("Annot Dir %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
 		//设置MAPS
-		inmaps->getTypeOffset(kDexTypeAnnotationsDirectoryItem)->offset = modList->Offset;
+		inmaps->getTypeItem(kDexTypeAnnotationsDirectoryItem)->offset = modList->Offset;
 		//
 		AnnotDir* m_AnnotDir = anDir;
 		u4* annotDir_Addr = (u4*)modList->Addr;

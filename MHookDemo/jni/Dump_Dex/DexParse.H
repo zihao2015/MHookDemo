@@ -51,11 +51,11 @@ public:
 * Dump出文件*
 * 内存数据排放问题
 *	使用map item type codes的大小顺序开始排放
-//设置对齐方便数据查看 mMem = mem->newMem(Align(mem->Szie(),0x100));
+*	设置对齐方便数据查看 mMem = mem->newMem(Align(mem->Szie(),0x100));
+*先解码DexFile
 ************************************************************
 */
 	void DumpToFile(char* appName,char* inFile){
-		Parse("DexParse@DumpToFile");
 		mem = new Mod_Mem();
 		Parse("[+]IDS DexParse");
 		//header、string_ids、types_ids、
@@ -73,7 +73,6 @@ public:
 		types->DatatoFile(mem,maps);
 		//proto(需要TypeList偏移地址)
 		proto->DatatoFile(mem,header,maps,types);
-		//
 		annot->AnnotToData(mem,maps);
 		annot->AnnotSetToData(mem,maps);
 		annot->AnnotSRLToData(mem,maps);
@@ -107,15 +106,12 @@ public:
 * 将解析和组装分开做
 * 	1.为了2代以上加固
 * 	2.为了调试添加数据
+*	3.
 ************************************************************
 */
  	DexParse(void* inAddr,DexFile* inDex){
+ 		// 初始化dex
 		dex = inDex;
-		//判断magic是否正确
-		if(memcmp(inDex->pHeader->magic,"dex",3) != 0){
-			Parse("[+]magic错误!");
-			return ;
-		}
 		//Header、maps
 		header = new Dex_Header(inDex);
 		maps = new Dex_Maps(inDex);
@@ -131,10 +127,10 @@ public:
 		annot = new Dex_Annot(inDex,maps);
 		//下面首先要判断是否存在，然后再去初始化
 		//Encoded、Debug、Dex_Code
-		if(maps->getTypeOffset(kDexTypeEncodedArrayItem) != NULL){
+		if(maps->getTypeItem(kDexTypeEncodedArrayItem) != NULL){
 			encoded = new Dex_Encoded(inDex,maps);
 		}
-		if(maps->getTypeOffset(kDexTypeDebugInfoItem) != NULL){
+		if(maps->getTypeItem(kDexTypeDebugInfoItem) != NULL){
 			debug = new Dex_Debug(inDex,maps);
 		}
 		//解析ClassData  然后根据内容解析Dex_Code

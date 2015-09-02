@@ -6,7 +6,6 @@
 #include "Dump_Dex.H"
 #include "Module_Mem.H" #include "DexMaps.H"
 #include "DexUtil.H"
-//__________________________________________________________
 //字符串保存列表
 typedef struct stringItem{
 	struct stringItem* next;
@@ -50,11 +49,11 @@ public:
 		Parse("Dex_String");
 		stringItem* strItem = NULL;
 		//获取IDS实际内存地址
-		u4* mMemIds =(u4*)((u4)inDex->pHeader + inDex->pHeader->stringIdsOff);
+		u4* mMemIds =(u4*)AddAddr2(inDex->pHeader,inDex->pHeader->stringIdsOff);
 		//遍历字符串
 		for(int m_i = 0;m_i < inDex->pHeader->stringIdsSize;m_i++){			stringItem* _item =(stringItem*)Alloc(sizeof(stringItem));
 			//获取字符串Code 起始地址
-			u1* mMemCode =(u1*)((u4)inDex->pHeader + *mMemIds);
+			u1* mMemCode =(u1*)AddAddr2(inDex->pHeader,*mMemIds);
 			_item->L128Code= readLeb128(mMemCode);
 			_item->L128Len = readLimitLeb128(mMemCode);
 			mMemCode = NEXTLeb128(mMemCode);
@@ -67,12 +66,11 @@ public:
 			_item->str = (char*)mMemCode;
 			_item->size = _item->strLen + _item->L128Len + 1;
 			//将字符串添加到列表中，AddToLast非常耗时
-			if(Idsitem == NULL){
-				Idsitem = _item;
-				strItem = _item;
+			if(strItem == NULL){
+				Idsitem = (typeList*)AddToLast(Idsitem,_item);
+				strItem = (typeList*)GetLastLink(Idsitem);
 			}else{
-
-				strItem = (stringItem*)AddLink(strItem,_item);
+				strItem = (typeList*)AddLink(strItem,_item);
 			}
 			//指向下一个字符串
 			mMemIds++;
@@ -96,31 +94,6 @@ public:
 	}
 /*
 ************************************************************
-*				SetMemory
-*1.将数据输出成文件
-*2.老函数，新版不会使用
-************************************************************
-*/
-	void SetMemory(str_ModMem* inIdS,str_ModMem* inCode){
-		stringItem* mitem = Idsitem;
-		u4* idsAddr = (u4*)inIdS->Addr;
-		unsigned char* idsCode = (unsigned char*)inCode->Addr;
-		Parse("SetMemory@inCode->Offset:0x%08X,idsCode:0x%08x",inCode->Offset,idsCode);
-		Parse("[+]String IDS offset:0x%08x,Code offset:0x%08x",inIdS->Offset,inCode->Offset);
-		size_t offset = 0;
-		//..
-		while(mitem != NULL){
-			*idsAddr = inCode->Offset + offset;
-			writeL128(idsCode+offset,mitem->L128Code);
-			memcpy(idsCode + offset +mitem->L128Len,mitem->str,mitem->strLen);
-			offset += mitem->size;
-			/*Parse("SetMemory@offset :0x%08x",offset);/**/
-			idsAddr++;
-			mitem = mitem->next;
-		}
-	}
-/*
-************************************************************
 *				IDStoFile
 *将字符串IDS宽度设置字符串，
 *但是字符串内容需要的DatatoFile中实现
@@ -136,9 +109,8 @@ public:
 			Parse("String Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
 		//修改maps偏移地址
-		inmaps->getTypeOffset(kDexTypeStringIdItem)->offset = modIds->Offset;
-		inmaps->getTypeOffset(kDexTypeStringIdItem)->size = getIdsCount();
-		inheader->Header->stringIdsOff = modIds->Offset;
+		inmaps->getTypeItem(kDexTypeStringIdItem)->offset = modIds->Offset;
+		inmaps->getTypeItem(kDexTypeStringIdItem)->size = getIdsCount();
 		inheader->Header->stringIdsSize = getIdsCount();
 	}
 /*
