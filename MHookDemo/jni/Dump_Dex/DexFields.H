@@ -53,12 +53,11 @@ public:
 */
 	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		DEXLOG("Dex_Fileds IDStoFile");
 		str_ModMem* modIds =inMem->getByName("FiledsIDS");
 		if(modIds== NULL){
 			modIds = inMem->newNameMem("FiledsIDS",GetCount(Idsitem)*8);
-			DEXLOG("Fileds Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
+		DEXLOG("[File]Fileds_Ids %08x %08x",modIds->Offset,modIds->Length);
 		//修改maps偏移地址
 		inmaps->getTypeItem(kDexTypeFieldIdItem)->offset = modIds->Offset;
 		inmaps->getTypeItem(kDexTypeFieldIdItem)->size = GetCount(Idsitem);

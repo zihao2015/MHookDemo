@@ -135,18 +135,18 @@ public:
 */
 	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		DEXLOG("Dex_Types IDStoFile");
 		str_ModMem* modIds =inMem->getByName("TypeIDS");
 		if(modIds == NULL){
 			modIds = inMem->newNameMem("TypeIDS",GetCount(Idsitem)*4);
-			DEXLOG("Type Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+
 		}
+		DEXLOG("[File]Type_Ids %08x %08x",modIds->Offset,modIds->Length);
 		//修改maps偏移地址
 		inmaps->getTypeItem(kDexTypeTypeIdItem)->offset = modIds->Offset;
 		inmaps->getTypeItem(kDexTypeTypeIdItem)->size = GetCount(Idsitem);
 		inheader->Header->typeIdsOff = modIds->Offset;
 		inheader->Header->typeIdsSize = GetCount(Idsitem);
-		//设置Type IDS数据
+		//遍历设置Type_Ids
 		u4* memIds = (u4*)modIds->Addr;
 		typeItem* _item = Idsitem;
 		while(_item != NULL){
@@ -163,13 +163,13 @@ public:
 ************************************************************
 */
 	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps){
-		DEXLOG("Dex_Types DatatoFile");
 		//判断是否存在 IDSString段，不存在就添加IDSString段
 		str_ModMem* modList =inMem->getByName("TypeList");
 		if(NULL == modList){
 			modList = inMem->newNameMem("TypeList",AlignAdd(getCodeLen(),0x04));
-			DEXLOG("TypeList %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
+
 		}
+		DEXLOG("[File]TypeList %08x %08x",modList->Offset,modList->Length);
 		//获取List数据
 		str_ModMem* memCode = inMem->getByName("TypeList");
 		//修改maps偏移地址

@@ -179,7 +179,7 @@ public:
 		DexClassData* mList = ClassD;
 		while(mList != NULL){
 			if(mList->BS.Offset_Load == inLoad){
-				DEXLOG("Dex_ClassDef %08x %08x",inLoad,mList->BS.Offset_File);
+//				DEXLOG("Dex_ClassDef %08x %08x",inLoad,mList->BS.Offset_File);
 				return mList->BS.Offset_File;
 			}
 			mList = mList->next;

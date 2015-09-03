@@ -71,12 +71,11 @@ public:
 */
 	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		DEXLOG("ClassDef IDStoFile");
 		str_ModMem* modIds =inMem->getByName("ClassDef");
 		if(modIds== NULL){
 			modIds = inMem->newNameMem("ClassDef",GetCount(Idsitem)*0x20);
-			DEXLOG("ClassDefine %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
 		}
+		DEXLOG("[File]ClassDefine %08x %08x",modIds->Offset,modIds->Length);
 		//修改maps偏移地址
 		inmaps->getTypeItem(kDexTypeClassDefItem)->offset = modIds->Offset;
 		inmaps->getTypeItem(kDexTypeClassDefItem)->size = GetCount(Idsitem);
@@ -113,7 +112,7 @@ public:
 		if(modIds== NULL){
 			DEXLOG("DatatoFile 设置原先没有数据，这里申请数据可能会出错,也不自动修复Header和MAPS");
 			modIds = inMem->newNameMem("ClassDef",GetCount(Idsitem)*0x20);
-			DEXLOG("ClassDef DatatoFile %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			DEXLOG("ClassDef DatatoFile %08x %08x ",modIds->Offset,modIds->Length);
 		}
 		//设置Fileds IDS数据
 		ClassDefItem* mitem = Idsitem;
@@ -123,7 +122,6 @@ public:
 			dexItem->accessFlags = mitem->accessFlags;
 			dexItem->superclassIdx = mitem->superclassIdx;
 			dexItem->interfacesOff = types->LoadToFile(mitem->interfacesOff);
-
 			dexItem->sourceFileIdx = mitem->sourceFileIdx;
 			dexItem->annotationsOff = annot->LoadToFile(mitem->annotationsOff);
 			dexItem->classDataOff = classCode->LoadToFile(mitem->classDataOff);

@@ -114,6 +114,7 @@ int Hook_Main(){
 //			MSHookFunction(mFun,(void*)&My_dvmDexFileOpenPartial,(void**)&_dvmDexFileOpenPartial);
 		}
 	}
+
 	// Hook fopen，
 #ifdef 	_DEBUG_
 	image = MSGetImageByName(libc);

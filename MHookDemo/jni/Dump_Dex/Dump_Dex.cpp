@@ -32,7 +32,7 @@ void* Dex_Parse(void* in){
 	DEXLOG("下载Demo2!");
 	DexUtil::SaveFile(Info->addr,Info->len,AppName,DexUtil::GetTimeName("Demo2"));
 	DEXLOG("下载Demo3，先解码DexFile然后合并!");
-			//	memcpy((void*)Info->Dex->pHeader,Info->BackOldDex,0x70);
+		//	memcpy((void*)Info->Dex->pHeader,Info->BackOldDex,0x70);
 	DexParse* parse = new DexParse(Info->addr,Info->Dex);
 	parse->DumpToFile(AppName,DexUtil::GetTimeName("Demo3"));
 	return NULL;
@@ -64,7 +64,7 @@ void Dump_DexFile(void* inAddr,size_t inLen,void* inDex){
 	info->len = inLen;
 	info->Dex = (DexFile*)inDex;
 	info->BackOldDex = DexUtil::Alloc(inLen);
-	memcpy(info->BackOldDex,DexUtil::GetBase(inAddr),0x70);
+//	memcpy(info->BackOldDex,DexUtil::GetBase(inAddr),0x70);
 	pthread_t thread;
 	pthread_create(&thread,NULL,Dex_Parse,info);
 }

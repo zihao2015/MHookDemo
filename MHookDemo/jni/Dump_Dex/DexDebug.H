@@ -65,6 +65,7 @@ public:
 ************************************************************
 */
 	void DatatoFile(Mod_Mem* inMem,Dex_Maps* inmaps){
+		//判断是否存在调试模块
 		if(NULL == debug){
 			DEXLOG("没有存在debug数据,直接退出!");
 			return ;
@@ -74,8 +75,12 @@ public:
 		str_ModMem* modList =inMem->getByName("DebugInfo");
 		if(NULL == modList){
 			modList = inMem->newNameMem("DebugInfo",AlignAdd(GetSize(debug),0x04));
-			DEXLOG("debug %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
+			DEXLOG("debug %08x %08x",modList->Offset,modList->Length);
 		}
+		//设置
+		mapsItem* _mapItem = inmaps->getTypeItem(kDexTypeDebugInfoItem);
+		_mapItem->offset =modList->Offset;
+		//遍历设置
 		U1*	mMem = modList->Addr;
 		DebugList* _List =debug;
 		while(NULL != _List){

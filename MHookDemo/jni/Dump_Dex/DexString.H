@@ -58,7 +58,8 @@ public:
 		stringItem* strItem = NULL;
 		for(int m_i = 0;m_i < pHeader->stringIdsSize;m_i++){			stringItem* _item =(stringItem*)Alloc(sizeof(stringItem));
 			//获取字符串Code 起始地址
-			u1* mMemCode =(u1*)AddAddr2(inDex->pHeader,*mMemIds);
+			_item->BS.SetLoad((u4)pHeader,(u4)mMemIds);
+			u1* mMemCode =(u1*)AddAddr2(pHeader,*mMemIds);
 			_item->L128Code= readLeb128(mMemCode);
 			_item->L128Len = readLimitLeb128(mMemCode);
 			mMemCode = NEXTLeb128(mMemCode);
@@ -91,13 +92,13 @@ public:
 ************************************************************
 */
 	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps){
-		DEXLOG("Dex_String IDStoFile");
 		//判断是否存在 IDSString段，不存在就添加IDSString段
 		str_ModMem* modIds =inMem->getByName("StringIDS");
 		if(modIds== NULL){
 			modIds = inMem->newNameMem("StringIDS",GetCount(Idsitem)*4);
-			DEXLOG("String Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+
 		}
+		DEXLOG("[File]String_Ids %08x %08x",modIds->Offset,modIds->Length);
 		//修改maps偏移地址
 		inmaps->getTypeItem(kDexTypeStringIdItem)->offset = modIds->Offset;
 		inmaps->getTypeItem(kDexTypeStringIdItem)->size = GetCount(Idsitem);

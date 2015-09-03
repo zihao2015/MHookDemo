@@ -28,6 +28,33 @@ typedef struct Base{
 	}
 /*
 ************************************************************
+*			GetLoad
+*获取加载内存地址*
+************************************************************
+*/
+	void SetLoad(u4 inBase,u4 inOffset){
+		Base_Load = inBase;
+		if(inOffset > inBase){
+			Offset_Load = inOffset - inBase;
+		}else{
+			Offset_Load = inOffset;
+		}
+	}
+/*
+************************************************************
+*			GetLoad
+*获取加载内存地址*
+************************************************************
+*/
+	void SetOffset(char* inAddr,char* inBase){
+		if(inAddr < inBase){
+			DEXLOG("[ERR]设置偏移地址失败");
+			return ;
+		}
+		Offset_File = (u4)(inAddr-inBase);
+	}
+/*
+************************************************************
 *			SetBaseLoad
 *设置加载内存基准地址*
 ************************************************************

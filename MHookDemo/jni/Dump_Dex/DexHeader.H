@@ -82,16 +82,14 @@ public:
 */
 	void IDStoFile(Mod_Mem* inMem){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		DEXLOG("Dex_Header IDStoFile");
 		str_ModMem* modIds =inMem->getByName("Header");
 		if(modIds== NULL){
-			modIds = inMem->newNameMem("Header",0x70);
-			DEXLOG("Header %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			modIds = inMem->newNameMem("Header",sizeof(DexHeader));
 		}
-		//设置文件大小
+		DEXLOG("[File]Header %08x %08x",modIds->Offset,modIds->Length);
+		//设置文件大小\拷贝数据到内存
 		Header->fileSize =inMem->Size();
 		Header->dataSize =inMem->Size() - Header->dataOff;
-		//拷贝数据到内存
 		memcpy(modIds->Addr,Header,0x70);
 	}
 };

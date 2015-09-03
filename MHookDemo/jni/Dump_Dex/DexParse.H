@@ -43,8 +43,6 @@ public:
 //最后融合段
 	Dex_Code*		code = NULL;
 	Dex_ClassCode*	classCode = NULL;
-
-//__________________________________________________________
 /*
 ************************************************************
 *				DumpToFile
@@ -66,7 +64,7 @@ public:
 		fileds->IDStoFile(mem,header,maps);
 		methods->IDStoFile(mem,header,maps);
 		classdef->IDStoFile(mem,header,maps);
-	//以下便是Code数据了,设置数据开始
+	//以下便是Code数据了,设置数据开始,
 		header->Header->dataOff= mem->Size();
 	//解析IDS对应的数据(code)
 		//TypeList
@@ -136,7 +134,7 @@ public:
 		//解析ClassData  然后根据内容解析Dex_Code
 		code = new Dex_Code(inDex);
 		classCode = new Dex_ClassCode(inDex,maps,code);
-		DEXLOG("[Parse] Over");
+		DEXLOG("[Parse]Over");
 	}
 };
 

@@ -57,12 +57,11 @@ public:
 */
 	void IDStoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		DEXLOG("Dex_Proto IDStoFile");
 		str_ModMem* modIds =inMem->getByName("ProtoIDS");
 		if(modIds== NULL){
-			modIds = inMem->newNameMem("ProtoIDS",GetCount(Idsitem)*12);
-			DEXLOG("Proto Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			modIds = inMem->newNameMem("ProtoIDS",GetCount(Idsitem)*0xC);
 		}
+		DEXLOG("[File]Proto_Ids %08x %08x",modIds->Offset,modIds->Length);
 		//修改maps偏移地址
 		inmaps->getTypeItem(kDexTypeProtoIdItem)->offset = modIds->Offset;
 		inmaps->getTypeItem(kDexTypeProtoIdItem)->size = GetCount(Idsitem);
@@ -77,17 +76,18 @@ public:
 */
 	void DatatoFile(Mod_Mem* inMem,Dex_Header* inheader,Dex_Maps* inmaps,Dex_Types* inType){
 		//判断是否存在 IDSString段，不存在就添加IDSString段
-		DEXLOG("Dex_Proto IDStoFile");
+		DEXLOG("[File]Dex_Proto");
 		str_ModMem* modIds =inMem->getByName("ProtoIDS");
-		if(modIds== NULL){
+		if(modIds == NULL){
 			modIds = inMem->newNameMem("ProtoIDS",GetCount(Idsitem)*12);
-			DEXLOG("Proto Ids %08x %08x %08x",modIds->Addr,modIds->Length,modIds->Offset);
+			DEXLOG("[File]Proto Ids %08x %08x",modIds->Offset,modIds->Length);
 		}
 		//修改maps偏移地址
 		inmaps->getTypeItem(kDexTypeProtoIdItem)->offset = modIds->Offset;
 		inmaps->getTypeItem(kDexTypeProtoIdItem)->size = GetCount(Idsitem);
 		inheader->Header->protoIdsOff = modIds->Offset;
 		inheader->Header->protoIdsSize =GetCount(Idsitem);
+		DEXLOG("[File]Dex_Proto Code");
 		//设置Proto IDS数据
 		ProtoItem* mitem = Idsitem;
 		DexProtoId* mID = (DexProtoId*)modIds->Addr;
