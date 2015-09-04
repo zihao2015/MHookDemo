@@ -303,7 +303,7 @@ public:
 		//获取基本信息
 		DexHeader*  pHeader = (DexHeader*)inDex->pHeader;
 		mapsItem* _mapsItem = maps->getTypeItem(kDexTypeAnnotationSetItem);
-		DEXLOG("[Parse]Ann_SRL %08x %08x",_mapsItem->offset,_mapsItem->size);
+		DEXLOG("[Parse]Ann_SET %08x %08x",_mapsItem->offset,_mapsItem->size);
 		//设置起始地址
 		u4* mAnnoSet =(u4*)AddAddr2(pHeader,_mapsItem->offset);
 		//遍历mAnSet
@@ -312,6 +312,8 @@ public:
 			Annot_Set* mAnSet = (Annot_Set*)Alloc(sizeof(Annot_Set));
 			//设置加载地址
 			mAnSet->BS.SetLoad((u4)pHeader,(u4)mAnnoSet);
+			mAnSet->Size =*mAnnoSet;
+			mAnnoSet++;
 			//遍历mAnSRL Item
 			for(int m_j = 0;m_j< mAnSet->Size;m_j++){
 				Annot_Set_Item* mItem = (Annot_Set_Item*)Alloc(sizeof(Annot_Set_Item));
@@ -319,6 +321,7 @@ public:
 				mAnSet->Item = (Annot_Set_Item*)AddToLast(mAnSet->Item,mItem);
 			}
 			mAnSet->BS.MemSize =SubAddr3(mAnnoSet,pHeader,mAnSet->BS.Offset_Load);
+			DEXLOG("[Parse]Ann_SET %08x",mAnSet->BS.MemSize );
 			//将_item添加到列表中，AddToLast非常耗时
 			if(_AnSet == NULL){
 				anSet = (Annot_Set*)AddToLast(anSet,mAnSet);
@@ -338,13 +341,9 @@ public:
 ************************************************************
 */
 	Dex_Annot(DexFile* inDex,Dex_Maps* maps){
-		DEXLOG("[Parse]Dex_Annot SRL");
 		Dex_Ann_SRL(inDex,maps);
-		DEXLOG("[Parse]DexAnnot");
 		DexAnnot(inDex,maps);
-		DEXLOG("[Parse]Dex_AnnotSet");
 		Dex_Ann_Set(inDex,maps);
-		DEXLOG("[Parse]Dex_AnnotDir");
 		Dex_AnnotDir(inDex,maps);
 	}
 
@@ -396,12 +395,11 @@ public:
 			return ;
 		}
 		//获取Annot模块内存，没有就新建
-		DEXLOG("[File]Annot");
 		str_ModMem* modList = inMem->getByName("AnnotItem");
 		if(NULL == modList){
 			modList = inMem->newNameMem("AnnotItem",AlignAdd(GetSize(annot),0x04));
-			DEXLOG("[File]Annot_Item %08x %08x ",modList->Offset,modList->Length);
 		}
+		DEXLOG("[File]Annot_Item %08x %08x ",modList->Offset,modList->Length);
 		//设置MAPS
 		inmaps->getTypeItem(kDexTypeAnnotationItem)->offset = modList->Offset;
 		//初始化数据
@@ -411,7 +409,6 @@ public:
 		DEXLOG("[File]Annot Code");
 		while(NULL != m_Annot){
 			//设置偏移
-
 			m_Annot->BS.Offset_File = AddAddr2(modList->Offset,SubAddr2(annot_Addr,modList->Addr));
 			memcpy(annot_Addr,(u1*)m_Annot->BS.GetLoad(),m_Annot->BS.MemSize);
 			annot_Addr +=m_Annot->BS.MemSize;
@@ -438,8 +435,8 @@ public:
 		str_ModMem* modList =inMem->getByName("AnnotSRL");
 		if(NULL == modList){
 			modList = inMem->newNameMem("AnnotSRL",AlignAdd(GetSize(SRL),0x04));
-			DEXLOG("[File]AnnotSRL %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
+		DEXLOG("[File]AnnotSRL %08x %08x",modList->Offset,modList->Length);
 		//设置MAPS
 		inmaps->getTypeItem(kDexTypeAnnotationSetRefList)->offset = modList->Offset;
 		//
@@ -468,12 +465,11 @@ public:
 			return ;
 		}
 		//获取AnnotSet模块内存，没有就新建
-		DEXLOG("AnnotSetToData");
 		str_ModMem* modList =inMem->getByName("AnnotSet");
 		if(NULL == modList){
 			modList = inMem->newNameMem("AnnotSet",AlignAdd(GetSize(anSet),0x04));
-			DEXLOG("Annot Set %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
+		DEXLOG("[File]AnnotSetToData %08x %08x",modList->Offset,modList->Length);
 		//设置MAPS
 		inmaps->getTypeItem(kDexTypeAnnotationSetItem)->offset = modList->Offset;
 		//设置Annot_Set
@@ -507,8 +503,8 @@ public:
 		str_ModMem* modList =inMem->getByName("Annot_Dir");
 		if(NULL == modList){
 			modList = inMem->newNameMem("Annot_Dir",AlignAdd(GetSize(anDir),0x04));
-			DEXLOG("Annot Dir %08x %08x %08x",modList->Addr,modList->Length,modList->Offset);
 		}
+		DEXLOG("Annot Dir %08x %08x",modList->Offset,modList->Length);
 		//设置MAPS
 		inmaps->getTypeItem(kDexTypeAnnotationsDirectoryItem)->offset = modList->Offset;
 		//
