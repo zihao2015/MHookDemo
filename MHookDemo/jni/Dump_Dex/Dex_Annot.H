@@ -70,7 +70,6 @@ typedef struct Annot_SRL{
 typedef struct AnnotDir_Item{
 	struct AnnotDir_Item* next;
 	Base BS;
-
 	u4	Idx;
 	u4	Offset_Annot;
 }AnnotDir_Item;
@@ -228,12 +227,13 @@ public:
 			mAnDir->Size_Methods = *mAnnoDir++;
 			mAnDir->Size_Params = *mAnnoDir++;
 			//Fields+Methods+Param
-			size_t mSize =mAnDir->Size_Feilds+mAnDir->Size_Methods+mAnDir->Size_Params;
+			size_t mSize = mAnDir->Size_Feilds+mAnDir->Size_Methods+mAnDir->Size_Params;
 			for(int m_j = 0;m_j< mSize;m_j++){
 				AnnotDir_Item* mItem = (AnnotDir_Item*)Alloc(sizeof(AnnotDir_Item));
 				mItem->BS.Offset_Load =  SubAddr2(mAnnoDir,pHeader);
 				mItem->Idx =*mAnnoDir++;
-				mItem->Offset_Annot =*mAnnoDir++;
+				mItem->Offset_Annot = *mAnnoDir;
+				mAnnoDir++;
 				mAnDir->item = (AnnotDir_Item*)AddToLast(mAnDir->item,mItem);
 			}
 			//设置内存宽度、将数据
@@ -241,7 +241,7 @@ public:
 			//将_item添加到列表中，AddToLast非常耗时
 			if(_anDir == NULL){
 				anDir = (AnnotDir*)AddToLast(anDir,mAnDir);
-				_anDir = (AnnotDir*)GetLastLink(annot);
+				_anDir = (AnnotDir*)GetLastLink(anDir);
 			}else{
 				_anDir = (AnnotDir*)AddLink(_anDir,mAnDir);
 			}
@@ -321,7 +321,7 @@ public:
 				mAnSet->Item = (Annot_Set_Item*)AddToLast(mAnSet->Item,mItem);
 			}
 			mAnSet->BS.MemSize =SubAddr3(mAnnoSet,pHeader,mAnSet->BS.Offset_Load);
-			DEXLOG("[Parse]Ann_SET %08x",mAnSet->BS.MemSize );
+	//		DEXLOG("[Parse]Ann_SET %08x",mAnSet->BS.MemSize);
 			//将_item添加到列表中，AddToLast非常耗时
 			if(_AnSet == NULL){
 				anSet = (Annot_Set*)AddToLast(anSet,mAnSet);
@@ -412,12 +412,12 @@ public:
 			m_Annot->BS.Offset_File = AddAddr2(modList->Offset,SubAddr2(annot_Addr,modList->Addr));
 			memcpy(annot_Addr,(u1*)m_Annot->BS.GetLoad(),m_Annot->BS.MemSize);
 			annot_Addr +=m_Annot->BS.MemSize;
+			m_Annot = m_Annot->next;
 			/*
 			annot_Addr = writeL128(annot_Addr,m_Annot->Visibility);
 			annot_Addr = writeL128(annot_Addr,m_Annot->Type);
 			annot_Addr = writeL128(annot_Addr,m_Annot->Count);
 			Annot_List* mList = m_Annot->List;/**/
-			m_Annot = m_Annot->next;
 		}
 	}
 /*
@@ -436,7 +436,7 @@ public:
 		if(NULL == modList){
 			modList = inMem->newNameMem("AnnotSRL",AlignAdd(GetSize(SRL),0x04));
 		}
-		DEXLOG("[File]AnnotSRL %08x %08x",modList->Offset,modList->Length);
+		DEXLOG("[File]AnnotSRL %p %p",modList->Offset,modList->Length);
 		//设置MAPS
 		inmaps->getTypeItem(kDexTypeAnnotationSetRefList)->offset = modList->Offset;
 		//
@@ -499,12 +499,11 @@ public:
 			return ;
 		}
 		//获取AnnotDir模块内存，没有就新建
-		DEXLOG("AnnotDirToData");
 		str_ModMem* modList =inMem->getByName("Annot_Dir");
 		if(NULL == modList){
 			modList = inMem->newNameMem("Annot_Dir",AlignAdd(GetSize(anDir),0x04));
 		}
-		DEXLOG("Annot Dir %08x %08x",modList->Offset,modList->Length);
+		DEXLOG("[File]Annot Dir %p %p",modList->Offset,modList->Length);
 		//设置MAPS
 		inmaps->getTypeItem(kDexTypeAnnotationsDirectoryItem)->offset = modList->Offset;
 		//
@@ -528,8 +527,8 @@ public:
 	}
 /*
 ************************************************************
-*				getCodeLen
-*将加载偏移地址设置为文件偏移
+*				LoadToFile
+*将加载偏移地址设置为文件偏移*
 ************************************************************
 */
 	size_t LoadToFile(size_t inLoad){
@@ -562,32 +561,8 @@ public:
 			}
 			mDir = mDir->next;
 		}
+		DEXLOG("[ERR]Annot LoadToFile is no find %p",inLoad);
 		return inLoad;
-	}
-/*
-************************************************************
-*				getCodeLen
-*获取整个大小
-************************************************************
-*/
-	size_t getCodeLen(){
-		size_t mSize = 0;
-		Annot_SRL* mItem = SRL;
-		while(mItem != NULL){
-			mSize += mItem->BS.MemSize;
-			mItem =  mItem->next;
-		}
-		Annot_Set* mSetList = anSet;
-		while(mSetList != NULL){
-			mSize += mSetList->BS.MemSize;
-			mSetList = mSetList->next;
-		}
-		AnnotDir* mDir = anDir;
-		while(mDir != NULL){
-			mSize += mDir->BS.MemSize;
-			mDir = mDir->next;
-		}
-		return mSize;
 	}
 /*
 ************************************************************

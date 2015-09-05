@@ -18,8 +18,11 @@ typedef struct stringItem{
 	u4	 	size;
 }stringItem;
 class Dex_String : DexUtil{
+#define STR_StringIds		"StringIDS"
+#define STR_StringCode		"StringCode"
 public:
 	stringItem* Idsitem = NULL;
+
 /*
 ************************************************************
 *				getCodeLen
@@ -35,6 +38,19 @@ public:
 		}
 		DEXLOG("Dex_String@getCodeLen:0x%08x",mSzie);
 		return mSzie;
+	}
+/*
+************************************************************
+*				CreateIdsMemory
+*创建保存IDS的内存空间*
+************************************************************
+*/
+	void CreateIdsMemory(Mod_Mem* inMem){
+		//判断原先是否存在
+		if(NULL == inMem->getByName(STR_StringIds)){
+			str_ModMem* modIds = inMem->newNameMem(STR_StringIds,GetCount(Idsitem)*4);
+			DEXLOG("[Create]String_Ids %08x %08x",modIds->Offset,modIds->Length);
+		}
 	}
 /*
 ************************************************************
