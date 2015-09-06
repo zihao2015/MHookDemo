@@ -14,15 +14,14 @@
 #include "DexFields.H"
 #include "DexMethods.H"
 #include "DexMaps.H"
-#include "DexClassDef.H"
 #include "Dex_Encoded.H"
 #include "Dex_Annot.H"
-#include "DexClassCode.H"
-#include "DexCode.H"
 #include "DexDebug.H"
+#include "DexClass.H"
 /*
  *						解析Dex文件格式
  */
+namespace Dex{
 class DexParse : DexUtil{
 public:
 	DexFile* dex = NULL;
@@ -34,15 +33,12 @@ public:
 	Dex_Proto*  	proto = NULL;
 	Dex_Fileds*		fileds = NULL;
 	Dex_Methods* 	methods = NULL;
-	Dex_ClassDef* 	classdef = NULL;
+	Dex_Class* 		Dexclass = NULL;
 	Dex_Maps*		maps = NULL;
 //可能不会存在段
 	Dex_Encoded*	encoded = NULL;
 	Dex_Annot* 		annot = NULL;
 	Dex_Debug*		debug = NULL;
-//最后融合段
-	Dex_Code*		code = NULL;
-	Dex_ClassCode*	classCode = NULL;
 /*
 ************************************************************
 *				DumpToFile
@@ -63,7 +59,7 @@ public:
 		proto->IDStoFile(mem,header,maps);
 		fileds->IDStoFile(mem,header,maps);
 		methods->IDStoFile(mem,header,maps);
-		classdef->IDStoFile(mem,header,maps);
+		Dexclass->ClassDef_IDStoFile(mem,header,maps);
 	//以下便是Code数据了,设置数据开始,
 		header->Header->dataOff= mem->Size();
 	//解析IDS对应的数据(code)
@@ -84,10 +80,10 @@ public:
 			debug->DatatoFile(mem,maps);
 		}
 	//Code
-		code->DatatoFile(mem,maps,debug);
-		classCode->DatatoFile(mem,maps,code);
+		Dexclass->Code_DatatoFile(mem,maps,debug);
+		Dexclass->ClassCode_DatatoFile(mem,maps);
 		string->DatatoFile(mem,maps);
-		classdef->DatatoFile(mem,types,annot,encoded,classCode);
+//		classdef->DatatoFile(mem,types,annot,encoded,classCode);
 	//根据DUMP数据正在修改MAPS和Header
 		maps->IDStoFile(mem,header);
 		header->IDStoFile(mem);
@@ -119,7 +115,8 @@ public:
 		proto = new Dex_Proto(inDex,maps);
 		fileds = new Dex_Fileds(inDex,maps);
 		methods = new Dex_Methods(inDex,maps);
-		classdef = new Dex_ClassDef(inDex,maps);
+		Dexclass = new Dex_Class();
+		Dexclass->Dex_ClassDef(inDex,maps);
 		//将Annot分开处理、使用Annot类进行解析
 		//Annot中包含kDexTypeAnnotationSetRefList、kDexTypeAnnotationSetItem、kDexTypeAnnotationItem、kDexTypeAnnotationsDirectoryItem
 		annot = new Dex_Annot(inDex,maps);
@@ -129,14 +126,18 @@ public:
 			encoded = new Dex_Encoded(inDex,maps);
 		}
 		if(maps->getTypeItem(kDexTypeDebugInfoItem) != NULL){
-			debug = new Dex_Debug(inDex,maps);
+		//	debug = new Dex_Debug(inDex,maps);
 		}
 		//解析ClassData  然后根据内容解析Dex_Code
-		code = new Dex_Code(inDex);
-		classCode = new Dex_ClassCode(inDex,maps,code);
+		//百度加固就消灭了kDexTypeClassDataItem(数据在只是将Maps从0x12改成0x11)，
+		if(NULL != maps->getTypeItem(kDexTypeClassDataItem)){
+			DEXLOG("采用maps，读取Class data");
+			Dexclass->Dex_ClassCode(inDex,maps);
+		}else{
+			DEXLOG("不存在kDexTypeClassDataItem,从ClassDef中读取数据");
+			Dexclass->Dex_ClassCode(inDex);
+		}
 		DEXLOG("[Parse]Over");
 	}
-};
-
-
+};};
 #endif

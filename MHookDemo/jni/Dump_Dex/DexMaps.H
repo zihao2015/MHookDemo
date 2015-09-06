@@ -67,6 +67,7 @@ public:
 		//获取Map个数,设置Maps Item 结构起始地址
 		Log(mapStart);
 		Map->mapSize = *((u4*)mapStart);
+		//Map->mapSize = 0x12;
 		DexMapId* MapsIds =(DexMapId*)(mapStart+4);
 		//遍历Map内容
 		for(int m_i = 0;m_i < Map->mapSize;m_i++){

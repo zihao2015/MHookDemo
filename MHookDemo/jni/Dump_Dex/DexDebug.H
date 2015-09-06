@@ -42,7 +42,7 @@ public:
 			_List->BS.SetLoadOffset((u4)mMem-(u4)inDex->pHeader);
 			mMem = readLeb128(mMem,&_List->number);
 			mMem = readLeb128(mMem,&_List->Size_Reg);
-//			Parse("Dex_Debug number:%08x",_List->number);
+			DEXLOG("Dex_Debug number:%08x",_List->number);
 //			Parse("Dex_Debug Size_Reg:%08x",_List->Size_Reg);
 			u4 mData = 0;
 			do{
@@ -50,7 +50,7 @@ public:
 				if(mData != 0){
 					DebugItem* _Item = (DebugItem*)Alloc(sizeof(DebugItem));
 					_Item->param_name = mData;
-//					Parse("Dex_Debug param_name:%08x",mData);
+					DEXLOG("Dex_Debug param_name:%08x",mData);
 					_List->Item = (DebugItem*)AddToLast(_List->Item,_Item);
 				}
 			}while(mData != 0);

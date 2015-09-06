@@ -18,7 +18,11 @@
 #define ptrace			"ptrace"
 #define free			"free"
 #define munmap			"munmap"
-
+long GETLR(){
+	long mLR = NULL;
+	__asm__ __volatile__("mov %0, lr\n\t":  "=r"(mLR));
+	return mLR;
+}
 //调用外部Dump_DexFile
 extern void Dump_DexFile(void* inAddr,size_t inLen,void* inDex);
 //__________________________________________________________________________________________
@@ -37,7 +41,7 @@ void* My_dexFileParse(int *inAddr, unsigned int length, int parseFlags){
 //dvmDexFileOpenFromFd
 int (*_dvmDexFileOpenFromFd)(int fd, void* ppDvmDex);
 int My_dvmDexFileOpenFromFd(int fd, void* ppDvmDex){
-	LOGD("LibCall My_dvmDexFileOpenFromFd");
+	LOGD("LibCall My_dvmDexFileOpenFromFd %p",GETLR());
 	return _dvmDexFileOpenFromFd(fd,ppDvmDex);
 }
 //dvmDexFileOpenPartial
@@ -88,6 +92,11 @@ int My_munmap(void *start,size_t length){
 	LOGD("LibCall _munmap %08x %08x",start,length);
 	return _munmap(start,length);
 }
+//
+static void* (*old_Sign)(JNIEnv *, jobject, ...);
+static void* new_Sign(JNIEnv *jni, jobject thiz){
+    return (*old_Sign)(jni, thiz);
+}
 /**
  *			Hook_Main
  *align_Len
@@ -115,7 +124,6 @@ int Hook_Main(){
 		}
 	}
 
-	// Hook fopen，
 #ifdef 	_DEBUG_
 	image = MSGetImageByName(libc);
 	if(image != NULL){
